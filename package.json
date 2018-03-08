@@ -1,6 +1,6 @@
 {
   "name": "ng-file-manager",
-  "version": "0.0.0",
+  "version": "0.0.0001",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
