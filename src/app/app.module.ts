@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgfmModule } from './ngfm/ngfm.module';
 import { PrivateRouteService } from './services/private-route.service';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,8 @@ import { PrivateRouteService } from './services/private-route.service';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgfmModule.forRoot()
+    NgfmModule.forRoot(),
+    BrowserAnimationsModule
   ],
   providers: [PrivateRouteService],
   bootstrap: [AppComponent]

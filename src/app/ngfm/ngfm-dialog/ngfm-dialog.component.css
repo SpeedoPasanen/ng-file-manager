@@ -1,0 +1,11 @@
+:host {
+    display: flex;
+    flex: 1 0 100%;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mat-dialog-actions {
+    display: block;
+    text-align: right;
+}

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NgfmService } from './ngfm/ngfm.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  constructor(
+    private ngfm: NgfmService
+  ) {
+
+  }
+  openDialog() {
+    this.ngfm.openDialog(['fooRoot'], ['fooPath']);
+  }
 }

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { map, tap } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
 
 
 @Component({
@@ -21,13 +20,16 @@ export class NgfmRouteComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
+    this.subscribeToRoute();
+    // this.path$.subscribe(p => console.log('RouteC Path', p));
+    // this.root$.subscribe(r => console.log('RouteC Root', r));
+  }
+  subscribeToRoute() {
     this.path$ = this.route.url.pipe(
-      // tap(segments => console.log(segments.map(seg => seg.path))),
-      map((segs: UrlSegment[]) => segs.map(seg => seg.path || '')),
+      map((segments: UrlSegment[]) => segments.map(seg => seg.path).filter(path => !!path)),
     );
     this.root$ = this.route.data.pipe(map(data => data.root || []));
-    this.path$.subscribe(p => console.log('RouteC Path', p));
-    this.root$.subscribe(r => console.log('RouteC Root', r));
   }
   navigated(urlPart: string) {
     /* const parts = ['/files', ...this.currentRoot.split('/')];
