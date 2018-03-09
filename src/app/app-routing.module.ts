@@ -6,25 +6,31 @@ import { NgfmRouteComponent } from './ngfm/public_api';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'public',
+    redirectTo: 'files/public',
     pathMatch: 'full'
   },
   {
-    path: 'public',
+    path: 'files/public',
     children: [
       {
         path: '**',
         component: NgfmRouteComponent,
-        data: { root: ['public'] }
+        data: {
+          angularRoot: ['/files'],
+          root: ['public']
+        }
       }
     ]
   },
   {
-    path: 'private',
+    path: 'files/private',
     children: [
       {
         path: '**',
         component: NgfmRouteComponent,
+        data: {
+          angularRoot: ['/files']
+        },
         resolve: {
           root: PrivateRouteService
         }

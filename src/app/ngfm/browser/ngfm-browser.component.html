@@ -5,11 +5,19 @@
 </p>
 <p *ngIf="folder$|async as folder">
   <button mat-button (click)="uploadDialog(folder)">
-    <i class="fa fa-plus"></i>
+    <i class="fa fa-plus"></i> Upload
+  </button>
+  <button mat-button (click)="mkDir(folder)">
+    <i class="fa fa-plus"></i> MKDIR
   </button>
 </p>
-<p>
-  <code><pre>
-    {{children$|async|json}}
+<div *ngIf="children$|async as children">
+  <p>
+    <code><pre>
+    {{children|json}}
   </pre></code>
-</p>
+  </p>
+  <p *ngFor="let folderChild of children.folders">
+    <a href="javascript:void(0)" (click)="navigate(folderChild)">{{folderChild.name}}</a>
+  </p>
+</div>

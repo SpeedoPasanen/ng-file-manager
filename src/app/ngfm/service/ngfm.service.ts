@@ -45,4 +45,8 @@ export class NgfmService {
     return dlg.afterClosed();
   }
 
+  mkSubDir(folder: NgfmFolder, dirName: string) {
+    return this.connector.mkDir(new NgfmFolder(folder.root, [...folder.path, dirName]));
+  }
+
 }

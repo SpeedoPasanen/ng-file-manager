@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { map, tap } from 'rxjs/operators';
+import { NgfmFolder } from '../models/public_api';
 
 
 @Component({
@@ -14,24 +15,26 @@ export class NgfmRouteComponent implements OnInit {
   root$: Observable<string[]>;
   path$: Observable<string[]>;
   private currentPath: string;
+  private angularRoot = [];
   constructor(
     private route: ActivatedRoute,
     private router: Router
   ) { }
 
   ngOnInit() {
-
     this.subscribeToRoute();
-    // this.path$.subscribe(p => console.log('RouteC Path', p));
-    // this.root$.subscribe(r => console.log('RouteC Root', r));
   }
   subscribeToRoute() {
+    this.route.data.subscribe(data => {
+      this.angularRoot = data.angularRoot || [];
+    });
     this.path$ = this.route.url.pipe(
       map((segments: UrlSegment[]) => segments.map(seg => seg.path).filter(path => !!path)),
     );
     this.root$ = this.route.data.pipe(map(data => data.root || []));
   }
-  navigated(urlPart: string) {
+  navigated(folder: NgfmFolder) {
+    this.router.navigate(this.angularRoot.concat(folder.fullPath));
     /* const parts = ['/files', ...this.currentRoot.split('/')];
      if (urlPart === '..') {
        parts.pop();
