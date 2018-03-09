@@ -1,0 +1,21 @@
+<ngfm-dialog-header [title]="folder"></ngfm-dialog-header>
+<mat-dialog-content>
+  <div style="height:0;overflow:hidden;">
+    <input type="file" (change)="fileChange($event)" multiple #fileInput>
+  </div>
+  <div (click)="fileInput.click()" [class.over]="isOver" class="dropzone" (drop)="dropped($event)" (dragover)="dragOver($event)"
+    (dragleave)="dragLeave($event)">
+    <p>Drag&amp;Drop or Click</p>
+    <div><i class="fa fa-chevron-circle-down fa-2x"></i></div>
+  </div>
+  <mat-list>
+    <mat-list-item *ngFor="let file of files">
+      <p matLine>{{file.name}}</p>
+      <p matLine>{{file.humanSize.value |number:'1.0-2'}} {{file.humanSize.unit}}</p>
+      <button mat-mini-fab (click)="files.splice(files.indexOf(file),1)"><i class="fa fa-times "></i></button>
+      <div matLine>
+        <mat-divider></mat-divider>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</mat-dialog-content>

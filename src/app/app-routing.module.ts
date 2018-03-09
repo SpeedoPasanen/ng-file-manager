@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { NgfmRouteComponent } from './ngfm/ngfm-route/ngfm-route.component';
 import { PrivateRouteService } from './services/private-route.service';
+import { NgfmRouteComponent } from './ngfm/public_api';
 
 const routes: Routes = [
   {

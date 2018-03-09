@@ -8,6 +8,7 @@ import { of } from 'rxjs/observable/of';
   styleUrls: ['./ngfm-dialog.component.css']
 })
 export class NgfmDialogComponent implements OnInit {
+  title = 'File Browser';
   path$: Observable<string[]>;
   root$: Observable<string[]>;
   constructor(
@@ -20,6 +21,6 @@ export class NgfmDialogComponent implements OnInit {
     }
     this.path$ = of(this.dialogData.path);
     this.root$ = of(this.dialogData.root);
+    this.title = this.dialogData.title || this.title;
   }
-
 }

@@ -1,0 +1,13 @@
+:host {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    margin-bottom: 0.5em;
+}
+
+:host .mat-dialog-title {
+    margin: 0 1em 0.5em 0;
+    display: block;
+}

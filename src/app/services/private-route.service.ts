@@ -7,6 +7,6 @@ export class PrivateRouteService {
 
   constructor() { }
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any {
-    return of(['private', 2]);
+    return of(['private', '1337']);
   }
 }
