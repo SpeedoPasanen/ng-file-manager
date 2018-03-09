@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Optional, Inject, HostBinding } from '@angula
 import { Observable } from 'rxjs/Observable';
 import { NgfmFolder, NgfmFile } from '../models/public_api';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { NgfmService } from '../service/ngfm.service';
 import { NgfmConfig } from '../config/ngfm-config';
 
@@ -17,6 +17,7 @@ export class NgfmBrowserComponent implements OnInit {
   @Input() config$: Observable<NgfmConfig>;
   @HostBinding('class.ngfm-browser') private _hostClass = true;
   folder$: Observable<NgfmFolder>;
+  children$: Observable<{ files: NgfmFile[], folders: NgfmFolder[] }>;
   constructor(
     private ngfm: NgfmService
   ) { }
@@ -25,12 +26,16 @@ export class NgfmBrowserComponent implements OnInit {
     this.folder$ = combineLatest(this.root$, this.path$)
       .pipe(
         map(([root, path]) => new NgfmFolder(root, path)),
-        tap(console.log)
+        tap(this.refresh.bind(this))
       );
   }
 
+  refresh(folder: NgfmFolder) {
+    this.children$ = this.ngfm.connector.ls(folder);
+  }
+
   uploadDialog(folder: NgfmFolder) {
-    this.ngfm.uploadDialog(folder);
+    this.ngfm.uploadDialog(folder).subscribe(result => this.refresh(folder));
   }
 
 }

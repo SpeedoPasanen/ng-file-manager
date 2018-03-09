@@ -18,3 +18,7 @@
     border: 2px dashed #a0a0a0;
     background: #c0c0c0;
 }
+
+.ngfm-upload-file-list {
+    margin: 0.5em 0;
+}

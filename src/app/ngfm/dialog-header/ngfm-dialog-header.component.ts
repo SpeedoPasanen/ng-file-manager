@@ -7,6 +7,7 @@ import { Component, OnInit, Input, HostBinding } from '@angular/core';
 })
 export class NgfmDialogHeaderComponent implements OnInit {
   @Input() title = '';
+  @Input() disableClose = false;
   @HostBinding('class.ngfm-dialog-header') _hostClass = true;
   constructor() { }
 

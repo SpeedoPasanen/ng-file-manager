@@ -1,15 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { NgfmDialogComponent } from '../public_api';
+import { NgfmDialogComponent, NgfmUploadStatus } from '../public_api';
 import { NgfmFolder, NgfmFile } from '../models/public_api';
 import { NgfmUploadDialogComponent } from '../upload-dialog/ngfm-upload-dialog.component';
 import { Observable } from 'rxjs/Observable';
+import { switchMap, map, tap } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
+import { concat } from 'rxjs/observable/concat';
+import { NGFM_CONNECTOR, NgfmConnector } from '../connectors/public_api';
 
 @Injectable()
 export class NgfmService {
 
   constructor(
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    @Inject(NGFM_CONNECTOR) public connector: NgfmConnector
   ) { }
 
   /**
@@ -32,11 +37,12 @@ export class NgfmService {
    *
    * @param folder Path to upload into
    */
-  uploadDialog(folder: NgfmFolder): Observable<NgfmFile[] | null> {
+  uploadDialog(folder: NgfmFolder): Observable<any> {
     const dlg = this.dialog.open(NgfmUploadDialogComponent, {
       minWidth: '60vw',
       data: { folder }
     });
     return dlg.afterClosed();
   }
+
 }

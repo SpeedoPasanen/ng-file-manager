@@ -19,6 +19,11 @@ export class NgfmFile {
     extension = '';
 
     /**
+     * 0 Byte files and files without a type are considered invalid (possibly folders) and shall not be uploaded
+     */
+    isValid = true;
+
+    /**
      * UNIX timestamp
      */
     lastModified = new Date().getTime();
@@ -55,6 +60,9 @@ export class NgfmFile {
         this.extension = this.name.replace(/[^\.]*./, '').toLowerCase();
         this.nativeFile = init instanceof File ? init : null;
         this.humanSize = this.getHumanSize();
+        // File is invalid if: No size or no extension, except `.htaccess` etc.
+        // @TODO add replaceable validator class, so user can decide which files are valid
+        this.isValid = (!!this.size) && (!!this.extension || /^\.[^\.]+/.test(this.name));
     }
 
 

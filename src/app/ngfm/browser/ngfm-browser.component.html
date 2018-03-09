@@ -4,5 +4,12 @@
 </pre></code>
 </p>
 <p *ngIf="folder$|async as folder">
-  <button mat-button (click)="uploadDialog(folder)"><i class="fa fa-plus"></i></button>
+  <button mat-button (click)="uploadDialog(folder)">
+    <i class="fa fa-plus"></i>
+  </button>
+</p>
+<p>
+  <code><pre>
+    {{children$|async|json}}
+  </pre></code>
 </p>

@@ -7,6 +7,8 @@ import { AppComponent } from './app.component';
 import { NgfmModule } from './ngfm/ngfm.module';
 import { PrivateRouteService } from './services/private-route.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgfmMemoryConnector } from './ngfm/connectors/ngfm-memory-connector';
+import { NGFM_CONNECTOR } from './ngfm/connectors/public_api';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     NgfmModule.forRoot(),
     BrowserAnimationsModule
   ],
-  providers: [PrivateRouteService],
+  providers: [
+    PrivateRouteService,
+    { provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
