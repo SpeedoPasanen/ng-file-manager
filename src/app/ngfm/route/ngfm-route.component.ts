@@ -33,6 +33,6 @@ export class NgfmRouteComponent implements OnInit {
     this.root$ = this.route.data.pipe(map(data => data.root || []));
   }
   navigated(folder: NgfmFolder) {
-    this.router.navigate(this.angularRoot.concat(folder.fullPath));
+    this.router.navigate(this.angularRoot.concat(folder.fullPath), { relativeTo: this.route });
   }
 }

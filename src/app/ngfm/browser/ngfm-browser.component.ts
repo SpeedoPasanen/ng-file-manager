@@ -57,8 +57,5 @@ export class NgfmBrowserComponent implements OnInit, OnChanges {
     if ('root$' in changes || 'path$' in changes) {
       this.rebase();
     }
-    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-    //Add '${implements OnChanges}' to the class.
-
   }
 }

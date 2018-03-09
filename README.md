@@ -1,7 +1,8 @@
 # Angular File Manager
-##  WIP, do not try to use yet!
 
 [![Join the chat at https://gitter.im/ng-file-manager/Lobby](https://badges.gitter.im/ng-file-manager/Lobby.svg)](https://gitter.im/ng-file-manager/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+##  WIP, do not try to use yet!
 
 # To come:
 - A file manager for Angular which will have some or all of these:
