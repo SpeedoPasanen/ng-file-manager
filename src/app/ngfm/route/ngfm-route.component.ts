@@ -14,7 +14,6 @@ export class NgfmRouteComponent implements OnInit {
 
   root$: Observable<string[]>;
   path$: Observable<string[]>;
-  private currentPath: string;
   private angularRoot = [];
   constructor(
     private route: ActivatedRoute,
@@ -35,13 +34,5 @@ export class NgfmRouteComponent implements OnInit {
   }
   navigated(folder: NgfmFolder) {
     this.router.navigate(this.angularRoot.concat(folder.fullPath));
-    /* const parts = ['/files', ...this.currentRoot.split('/')];
-     if (urlPart === '..') {
-       parts.pop();
-     } else {
-       parts.push(urlPart);
-     }
-     this.router.navigate(parts.filter(p => p.length && (p !== '/')));
-     */
   }
 }

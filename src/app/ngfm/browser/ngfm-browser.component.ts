@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Optional, Inject, HostBinding, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Optional, Inject, HostBinding, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { NgfmFolder, NgfmFile } from '../models/public_api';
 import { combineLatest } from 'rxjs/observable/combineLatest';
@@ -12,7 +12,7 @@ import { Subject } from 'rxjs/Subject';
   templateUrl: './ngfm-browser.component.html',
   styleUrls: ['./ngfm-browser.component.css']
 })
-export class NgfmBrowserComponent implements OnInit {
+export class NgfmBrowserComponent implements OnInit, OnChanges {
   @Input() root$: Observable<string[]>;
   @Input() path$: Observable<string[]>;
   @Input() config$: Observable<NgfmConfig>;
@@ -25,6 +25,10 @@ export class NgfmBrowserComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.rebase();
+  }
+
+  rebase() {
     this.folder$ = combineLatest(this.root$, this.path$)
       .pipe(
         map(([root, path]) => new NgfmFolder(root, path)),
@@ -49,5 +53,12 @@ export class NgfmBrowserComponent implements OnInit {
   navigate(folder: NgfmFolder) {
     this.navigated.next(folder);
   }
+  ngOnChanges(changes: SimpleChanges) {
+    if ('root$' in changes || 'path$' in changes) {
+      this.rebase();
+    }
+    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+    //Add '${implements OnChanges}' to the class.
 
+  }
 }

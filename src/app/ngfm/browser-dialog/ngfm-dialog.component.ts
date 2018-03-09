@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+import { NgfmFolder } from '../models/public_api';
 @Component({
   selector: 'ngfm-dialog',
   templateUrl: './ngfm-dialog.component.html',
@@ -22,5 +23,9 @@ export class NgfmDialogComponent implements OnInit {
     this.path$ = of(this.dialogData.path);
     this.root$ = of(this.dialogData.root);
     this.title = this.dialogData.title || this.title;
+  }
+  navigated(folder: NgfmFolder) {
+    this.path$ = of(folder.path);
+    this.root$ = of(folder.root);
   }
 }
