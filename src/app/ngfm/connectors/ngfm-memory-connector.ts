@@ -11,17 +11,17 @@ import * as _ from 'lodash';
 @Injectable()
 export class NgfmMemoryConnector implements NgfmConnector {
   private tree: any = {
-    'public': { files: this.getDemoFiles(5) },
-    'public/Public Folder 1': { files: this.getDemoFiles(50) },
-    'private/1337': { files: this.getDemoFiles(2) },
-    'private/1337/Private Folder 1': { files: this.getDemoFiles(2) },
+    'public': { files: this.getDemoFiles(1, ['public']) },
+    'public/Public Folder 1': { files: this.getDemoFiles(50, ['public'], ['Public Folder 1']) },
+    'private/1337': { files: this.getDemoFiles(1, ['private', '1337'], []) },
+    'private/1337/Private Folder 1': { files: this.getDemoFiles(1, ['private', '1337'], ['Private Folder 1']) },
   };
-  private getDemoFiles(amount: number) {
+  private getDemoFiles(amount: number, root: string[], path: string[] = []) {
     const files = [];
     while (amount > files.length) {
       const w = Math.round(Math.random() * 800 + 200);
       const h = Math.round(Math.random() * 800 + 200);
-      files.push(new NgfmFile(new NgfmFolder(['public'], []), {
+      files.push(new NgfmFile(new NgfmFolder(root, path), {
         name: `${w}x${h} demo file.jpg`, url: `https://placehold.it/${w}x${h}`,
         size: 1024 + Math.round(Math.random() * 20000000),
         type: 'image/jpeg'

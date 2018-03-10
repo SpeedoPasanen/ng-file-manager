@@ -2,8 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
-import { NgfmFolder } from '../models/public_api';
 import { NgfmConfig } from '../models/ngfm-config';
+import { NgfmFolder } from '../models/ngfm-folder';
 @Component({
   selector: 'ngfm-dialog',
   templateUrl: './ngfm-dialog.component.html',

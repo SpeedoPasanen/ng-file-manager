@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, Optional, Inject, HostBinding, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { NgfmFolder, NgfmFile } from '../models/public_api';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { map, tap, switchMap, startWith, take } from 'rxjs/operators';
-import { NgfmService } from '../service/ngfm.service';
 import { Subject } from 'rxjs/Subject';
 import { ObservableMedia, MediaChange } from '@angular/flex-layout';
-import { NgfmConfig } from '../public_api';
+import { NgfmConfig } from '../models/ngfm-config';
+import { NgfmFolder } from '../models/ngfm-folder';
+import { NgfmFile } from '../models/ngfm-file';
+import { NgfmService } from '../service/ngfm.service';
 
 @Component({
   selector: 'ngfm-browser',
@@ -20,7 +21,6 @@ export class NgfmBrowserComponent implements OnInit, OnChanges {
   @HostBinding('class.ngfm-browser') private _hostClass = true;
   @Output() navigated: EventEmitter<NgfmFolder> = new EventEmitter();
   gridCols$: Observable<number>;
-  gridRowHeight = 120;
   folder$: Observable<NgfmFolder>;
   children$: Observable<{ files: NgfmFile[], folders: NgfmFolder[] }>;
   constructor(
@@ -71,7 +71,6 @@ export class NgfmBrowserComponent implements OnInit, OnChanges {
     this.ngfm.mkSubDir(folder, name).subscribe(() => this.refresh(folder));
   }
   navigate(folder: NgfmFolder) {
-    console.log(folder);
     this.navigated.next(folder);
   }
   ngOnChanges(changes: SimpleChanges) {

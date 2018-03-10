@@ -8,7 +8,6 @@ import { NgfmDialogComponent } from './browser-dialog/ngfm-dialog.component';
 import { NgfmService } from './service/ngfm.service';
 import { NgfmUploadDialogComponent } from './upload-dialog/ngfm-upload-dialog.component';
 import { NgfmDialogHeaderComponent } from './dialog-header/ngfm-dialog-header.component';
-import { NgfmMemoryConnector } from './public_api';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgfmBrowserItemToolsComponent } from './browser-item-tools/ngfm-browser-item-tools.component';
 

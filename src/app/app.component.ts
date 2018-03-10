@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgfmService } from './ngfm/public_api';
+import { NgfmService } from './ngfm/service/ngfm.service';
 
 @Component({
   selector: 'app-root',

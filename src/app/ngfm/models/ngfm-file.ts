@@ -1,6 +1,6 @@
-import { NgfmFolder } from './public_api';
 import { Observable } from 'rxjs/Observable';
 import { Subscriber } from 'rxjs/Subscriber';
+import { NgfmFolder } from './ngfm-folder';
 export class NgfmFile {
     folder: NgfmFolder;
 

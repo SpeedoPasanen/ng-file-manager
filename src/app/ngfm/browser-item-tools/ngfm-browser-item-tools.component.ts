@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgfmFile } from '../models/ngfm-file';
-import { NgfmFolder } from '../public_api';
+import { NgfmFolder } from '../models/ngfm-folder';
 
 @Component({
   selector: 'ngfm-browser-item-tools',

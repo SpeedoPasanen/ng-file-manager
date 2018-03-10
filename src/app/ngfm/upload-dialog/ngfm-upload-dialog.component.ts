@@ -5,9 +5,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import * as _ from 'lodash';
 import { take, tap } from 'rxjs/operators';
 import { concat } from 'rxjs/observable/concat';
-import { NGFM_CONNECTOR } from '../connectors/public_api';
 import { NgfmConnector } from '../connectors/ngfm-connector';
 import { NgfmUploadStatus } from '../connectors/ngfm-upload-status';
+import { NGFM_CONNECTOR } from '../connectors/constants';
 @Component({
   selector: 'ngfm-upload-dialog',
   templateUrl: './ngfm-upload-dialog.component.html',

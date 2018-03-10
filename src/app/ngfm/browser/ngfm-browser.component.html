@@ -9,14 +9,13 @@
       <span i18n>Create Folder</span>
     </button>
   </p>
-
   <div *ngIf="gridCols$|async as gridCols">
     <div *ngIf="children$|async as children">
       <mat-grid-list [cols]="gridCols">
 
-        <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)">
+        <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)" class="ngfm-folder-tile">
           <mat-grid-tile-header>
-            <p>&laquo; {{folder.parent.name}}</p>
+            <p>&laquo;</p>
           </mat-grid-tile-header>
           <div class="folder-icon">
             <i class="fa fa-folder fa-2x"></i>
@@ -25,20 +24,21 @@
           <mat-grid-tile-footer>
           </mat-grid-tile-footer>
         </mat-grid-tile>
-        <div *ngFor="let item of children.folders">
-          <mat-grid-tile (click)="navigate(item)">
-            <mat-grid-tile-header>
-              <p>{{item.name}}</p>
-            </mat-grid-tile-header>
-            <div class="folder-icon">
-              <i class="fa fa-folder fa-2x"></i>
-            </div>
-            <mat-grid-tile-footer>
-              <ngfm-browser-item-tools [folder]="item"></ngfm-browser-item-tools>
-            </mat-grid-tile-footer>
-          </mat-grid-tile>
-        </div>
-        <mat-grid-tile *ngFor="let item of children.files" [style.background-image]="item.isImage() ? 'url(' + item.thumbnail +')' : ''">
+
+        <mat-grid-tile (click)="navigate(item)" *ngFor="let item of children.folders" class="ngfm-folder-tile">
+          <mat-grid-tile-header>
+            <p>{{item.name}}</p>
+          </mat-grid-tile-header>
+          <div class="folder-icon">
+            <i class="fa fa-folder fa-2x"></i>
+          </div>
+          <mat-grid-tile-footer>
+            <ngfm-browser-item-tools [folder]="item"></ngfm-browser-item-tools>
+          </mat-grid-tile-footer>
+        </mat-grid-tile>
+
+        <mat-grid-tile *ngFor="let item of children.files" [style.background-image]="item.isImage() ? 'url(' + item.thumbnail +')' : ''"
+          class="ngfm-file-tile">
           <mat-grid-tile-header>
             <p>{{item.name}}</p>
           </mat-grid-tile-header>

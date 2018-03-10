@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PrivateRouteService } from './services/private-route.service';
-import { NgfmRouteComponent } from './ngfm/public_api';
 import { NgfmConfig } from './ngfm/models/ngfm-config';
 import { NgfmPerms } from './ngfm/models/ngfm-perms';
 import { ConfigResolverService } from './services/config-resolver.service';
+import { NgfmRouteComponent } from './ngfm/route/ngfm-route.component';
 
 const routes: Routes = [
   {
