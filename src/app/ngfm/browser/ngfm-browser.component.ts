@@ -31,7 +31,6 @@ export class NgfmBrowserComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.rebase();
     this.gridCols$ = this.media.asObservable().pipe(
-      // MEH, TODO: get rid of this, calculate colCount from the container width
       startWith(),
       switchMap(() => this.getColCount()),
     );

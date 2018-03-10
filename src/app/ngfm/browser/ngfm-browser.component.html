@@ -12,7 +12,6 @@
   <div *ngIf="gridCols$|async as gridCols">
     <div *ngIf="children$|async as children">
       <mat-grid-list [cols]="gridCols">
-
         <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)" class="ngfm-folder-tile">
           <mat-grid-tile-header>
             <p>&laquo;</p>
@@ -22,6 +21,7 @@
             <i class="fa back-icon fa-caret-left"></i>
           </div>
           <mat-grid-tile-footer>
+            <ngfm-browser-item-tools [folder]="item" [config]="(config$|async)"></ngfm-browser-item-tools>
           </mat-grid-tile-footer>
         </mat-grid-tile>
 
@@ -33,7 +33,7 @@
             <i class="fa fa-folder fa-2x"></i>
           </div>
           <mat-grid-tile-footer>
-            <ngfm-browser-item-tools [folder]="item"></ngfm-browser-item-tools>
+            <ngfm-browser-item-tools [folder]="item" [config]="(config$|async)"></ngfm-browser-item-tools>
           </mat-grid-tile-footer>
         </mat-grid-tile>
 
@@ -43,7 +43,7 @@
             <p>{{item.name}}</p>
           </mat-grid-tile-header>
           <mat-grid-tile-footer>
-            <ngfm-browser-item-tools [file]="item"></ngfm-browser-item-tools>
+            <ngfm-browser-item-tools [file]="item" [config]="(config$|async)"></ngfm-browser-item-tools>
           </mat-grid-tile-footer>
         </mat-grid-tile>
 

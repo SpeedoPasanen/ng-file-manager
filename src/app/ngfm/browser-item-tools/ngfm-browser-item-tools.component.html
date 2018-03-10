@@ -1,1 +1,8 @@
-<p>gsdfgsfd</p>
+<div class="ngfm-browser-item-tools" (click)="clicked($event)">
+  <span *ngIf="file && config.perms.editFile">
+    <i class="fa fa-trash"></i>
+  </span>
+  <span *ngIf="folder && config.perms.editFolder">
+    <i class="fa fa-trash"></i>
+  </span>
+</div>

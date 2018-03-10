@@ -8,6 +8,12 @@
     background-size: cover;
     background-position: top center;
     background-repeat: no-repeat;
+    outline: none;
+}
+
+.mat-grid-tile * {
+    outline: none;
+    user-select: none;
 }
 
 .mat-grid-tile:hover {
