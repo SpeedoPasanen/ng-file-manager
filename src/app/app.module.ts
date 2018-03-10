@@ -9,7 +9,7 @@ import { PrivateRouteService } from './services/private-route.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgfmMemoryConnector } from './ngfm/connectors/ngfm-memory-connector';
 import { NGFM_CONNECTOR } from './ngfm/connectors/public_api';
-
+import { ConfigResolverService } from './services/config-resolver.service';
 @NgModule({
   declarations: [
     AppComponent
@@ -18,10 +18,11 @@ import { NGFM_CONNECTOR } from './ngfm/connectors/public_api';
     BrowserModule,
     AppRoutingModule,
     NgfmModule.forRoot(),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
   providers: [
     PrivateRouteService,
+    ConfigResolverService,
     { provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }
   ],
   bootstrap: [AppComponent]

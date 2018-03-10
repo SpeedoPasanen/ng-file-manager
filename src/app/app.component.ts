@@ -13,6 +13,6 @@ export class AppComponent {
 
   }
   openDialog() {
-    this.ngfm.openDialog(['fooRoot'], ['fooPath']);
+    this.ngfm.openDialog([], []);
   }
 }

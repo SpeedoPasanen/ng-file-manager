@@ -1,5 +1,6 @@
 import { NgfmFolder } from './public_api';
-
+import { Observable } from 'rxjs/Observable';
+import { Subscriber } from 'rxjs/Subscriber';
 export class NgfmFile {
     folder: NgfmFolder;
 
@@ -45,24 +46,34 @@ export class NgfmFile {
     humanSize: { value: number, unit: string };
 
     /**
-     * Absolute URLs for different use cases.
+     * URL where the file is served
      */
-    urls: {
-        serve: string;
-        download: string;
-        thumbnail: string;
-    };
+    url: string = '';
+    private _download: string;
+    private _thumbnail: string;
+
+    /**
+     * Optional download URL. Returns `this.url` when not set.
+     */
+    get download(): string { return this._download || this.url; }
+    set download(s: string) { this._download = s; }
+
+    /**
+     * Optional thumbnail URL. Returns `this.url` when not set.
+     */
+    get thumbnail(): string { return this._thumbnail || this.url; }
+    set thumbnail(s: string) { this._thumbnail = s; }
 
     constructor(folder: NgfmFolder, init: File | any) {
-        console.log('init', init);
         this.folder = folder;
-        Object.keys(this).forEach(key => key in init ? this[key] = init[key] : null);
+        Object.keys(this).forEach(key => key in init ? this[key] = init[key] : this[key]);
         this.extension = this.name.replace(/[^\.]*./, '').toLowerCase();
         this.nativeFile = init instanceof File ? init : null;
         this.humanSize = this.getHumanSize();
         // File is invalid if: No size or no extension, except `.htaccess` etc.
         // @TODO add replaceable validator class, so user can decide which files are valid
         this.isValid = (!!this.size) && (!!this.extension || /^\.[^\.]+/.test(this.name));
+        this.type = ('' + this.type).toLowerCase();
     }
 
 
@@ -82,4 +93,49 @@ export class NgfmFile {
         return { value, unit };
     }
 
+    private read(subscriber: Subscriber<any>): FileReader {
+        if (!this.nativeFile) {
+            throw Error(`You tried to read an NgfmFile that doesn't have a nativeFile: ` + JSON.stringify(this));
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => subscriber.next(reader.result);
+        return reader;
+    }
+    readDataURL(): Observable<string> {
+        return new Observable(subscriber => {
+            const reader = this.read(subscriber);
+            reader.readAsDataURL(this.nativeFile);
+        })
+    }
+    readArrayBuffer(): Observable<ArrayBuffer> {
+        return new Observable(subscriber => {
+            const reader = this.read(subscriber);
+            reader.readAsArrayBuffer(this.nativeFile);
+        })
+    }
+    readBinaryString(): Observable<any> {
+        return new Observable(subscriber => {
+            const reader = this.read(subscriber);
+            reader.readAsBinaryString(this.nativeFile);
+        })
+    }
+    readText(): Observable<string> {
+        return new Observable(subscriber => {
+            const reader = this.read(subscriber);
+            reader.readAsText(this.nativeFile);
+        })
+    }
+
+    /**
+     * Helper for checking MIME type
+     */
+    isImage() { return /image/.test(this.type); }
+    /**
+     * Helper for checking MIME type
+     */
+    isVideo() { return /video/.test(this.type); }
+    /**
+     * Helper for checking MIME type
+     */
+    isText() { return /text/.test(this.type); }
 }

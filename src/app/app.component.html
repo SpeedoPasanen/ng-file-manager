@@ -1,13 +1,6 @@
 <p>
-  <a [routerLink]="['/files/public']">Public</a>
-</p>
-<p>
-  <a [routerLink]="['/files/public', 'folder_1']">public/folder_1</a>
-</p>
-<p>
-  <a [routerLink]="['/files/private', 'private_folder_1', 'private_subfolder_1']">private/private_folder_1/private_subfolder_1</a>
-</p>
-<p>
-  <button (click)="openDialog()">Open Dialog</button>
+  <button mat-button mat-raised-button (click)="openDialog()">Open Dialog</button>
+  <a [routerLink]="['/files', 'private']" routerLinkActive="underline">Your Files</a> |
+  <a [routerLink]="['/files', 'public']" routerLinkActive="underline">Public Files</a>
 </p>
 <router-outlet></router-outlet>

@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { NgfmFolder } from '../models/public_api';
+import { NgfmConfig } from '../models/ngfm-config';
 @Component({
   selector: 'ngfm-dialog',
   templateUrl: './ngfm-dialog.component.html',
@@ -12,6 +13,7 @@ export class NgfmDialogComponent implements OnInit {
   title = 'File Browser';
   path$: Observable<string[]>;
   root$: Observable<string[]>;
+  config$: Observable<string[]>;
   constructor(
     @Inject(MAT_DIALOG_DATA) private dialogData: any
   ) { }
@@ -22,6 +24,7 @@ export class NgfmDialogComponent implements OnInit {
     }
     this.path$ = of(this.dialogData.path);
     this.root$ = of(this.dialogData.root);
+    this.config$ = of(this.dialogData.config || new NgfmConfig());
     this.title = this.dialogData.title || this.title;
   }
   navigated(folder: NgfmFolder) {

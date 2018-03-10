@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { NgfmRouteComponent } from './route/ngfm-route.component';
 import { NgfmBrowserComponent } from './browser/ngfm-browser.component';
-import { MatDialogModule, MatButtonModule, MatListModule, MatProgressBarModule } from '@angular/material';
+import { MatDialogModule, MatButtonModule, MatListModule, MatProgressBarModule, MatGridListModule } from '@angular/material';
 import { NgfmDialogComponent } from './browser-dialog/ngfm-dialog.component';
 import { NgfmService } from './service/ngfm.service';
 import { NgfmUploadDialogComponent } from './upload-dialog/ngfm-upload-dialog.component';
 import { NgfmDialogHeaderComponent } from './dialog-header/ngfm-dialog-header.component';
 import { NgfmMemoryConnector } from './public_api';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgfmBrowserItemToolsComponent } from './browser-item-tools/ngfm-browser-item-tools.component';
 
 @NgModule({
   imports: [
@@ -16,7 +18,9 @@ import { NgfmMemoryConnector } from './public_api';
     MatDialogModule,
     MatButtonModule,
     MatListModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatGridListModule,
+    FlexLayoutModule,
   ],
   exports: [],
   declarations: [
@@ -25,6 +29,7 @@ import { NgfmMemoryConnector } from './public_api';
     NgfmDialogComponent,
     NgfmUploadDialogComponent,
     NgfmDialogHeaderComponent,
+    NgfmBrowserItemToolsComponent,
   ],
   entryComponents: [NgfmDialogComponent, NgfmUploadDialogComponent],
   providers: []

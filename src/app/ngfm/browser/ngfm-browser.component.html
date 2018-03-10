@@ -1,23 +1,53 @@
-<p>
-  <code><pre>
-  {{folder$|async|json}}
-</pre></code>
-</p>
-<p *ngIf="folder$|async as folder">
-  <button mat-button (click)="uploadDialog(folder)">
-    <i class="fa fa-plus"></i> Upload
-  </button>
-  <button mat-button (click)="mkDir(folder)">
-    <i class="fa fa-plus"></i> MKDIR
-  </button>
-</p>
-<div *ngIf="children$|async as children">
+<div *ngIf="folder$|async as folder">
   <p>
-    <code><pre>
-    {{children|json}}
-  </pre></code>
+    <button mat-button (click)="uploadDialog(folder)" *ngIf="(config$|async)?.perms.createFile">
+      <i class="fa fa-plus"></i>
+      <span i18n>Upload</span>
+    </button>
+    <button mat-button (click)="mkDir(folder)" *ngIf="(config$|async)?.perms.createFolder">
+      <i class="fa fa-plus"></i>
+      <span i18n>Create Folder</span>
+    </button>
   </p>
-  <p *ngFor="let folderChild of children.folders">
-    <a href="javascript:void(0)" (click)="navigate(folderChild)">{{folderChild.name}}</a>
-  </p>
+
+  <div *ngIf="gridCols$|async as gridCols">
+    <div *ngIf="children$|async as children">
+      <mat-grid-list [cols]="gridCols">
+
+        <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)">
+          <mat-grid-tile-header>
+            <p>&laquo; {{folder.parent.name}}</p>
+          </mat-grid-tile-header>
+          <div class="folder-icon">
+            <i class="fa fa-folder fa-2x"></i>
+            <i class="fa back-icon fa-caret-left"></i>
+          </div>
+          <mat-grid-tile-footer>
+          </mat-grid-tile-footer>
+        </mat-grid-tile>
+        <div *ngFor="let item of children.folders">
+          <mat-grid-tile (click)="navigate(item)">
+            <mat-grid-tile-header>
+              <p>{{item.name}}</p>
+            </mat-grid-tile-header>
+            <div class="folder-icon">
+              <i class="fa fa-folder fa-2x"></i>
+            </div>
+            <mat-grid-tile-footer>
+              <ngfm-browser-item-tools [folder]="item"></ngfm-browser-item-tools>
+            </mat-grid-tile-footer>
+          </mat-grid-tile>
+        </div>
+        <mat-grid-tile *ngFor="let item of children.files" [style.background-image]="item.isImage() ? 'url(' + item.thumbnail +')' : ''">
+          <mat-grid-tile-header>
+            <p>{{item.name}}</p>
+          </mat-grid-tile-header>
+          <mat-grid-tile-footer>
+            <ngfm-browser-item-tools [file]="item"></ngfm-browser-item-tools>
+          </mat-grid-tile-footer>
+        </mat-grid-tile>
+
+      </mat-grid-list>
+    </div>
+  </div>
 </div>
