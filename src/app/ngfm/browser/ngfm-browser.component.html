@@ -46,7 +46,7 @@
         </mat-grid-tile-footer>
         <mat-grid-tile-footer *ngIf="(!pick) && (config$|async)?.perms.hasAny">
           <ngfm-browser-item-tools [items]="[item]" [config]="(config$|async)" [isFile]="item.isFile"></ngfm-browser-item-tools>
-          <mat-checkbox *ngIf="item.isFile" [(ngModel)]="item.selected" (change)="selectionChange(item)"></mat-checkbox>
+          <mat-checkbox *ngIf="item.isFile" [(ngModel)]="item.selected" (change)="selectionChange(item)" (click)="$event.stopPropagation()"></mat-checkbox>
         </mat-grid-tile-footer>
       </mat-grid-tile>
 

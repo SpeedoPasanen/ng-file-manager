@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef, MatSnackBar, MatSnackBarConfig } from '@angular/material';
+import { MatDialog, MatDialogRef, MatSnackBar, MatSnackBarConfig, MatSnackBarRef } from '@angular/material';
 
 import { NgfmDialogComponent } from './ngfm-dialog.component';
 
@@ -31,7 +31,7 @@ export class NgfmDialogService {
   public openOkCancel(title: string, html: string = '') {
     return this.open(title, html, this.okCancel);
   }
-  public snackbar(message: string, action?: any, config?: MatSnackBarConfig) {
+  public snackbar(message: string, action?: any, config?: MatSnackBarConfig): MatSnackBarRef<any> {
     return this.snack.open(message, action, config);
   }
   public closeAll() {
@@ -42,7 +42,7 @@ export class NgfmDialogService {
   }
 }
 
-interface DialogButtonConfig {
+export interface DialogButtonConfig {
   text: string;
   color?: string;
   value?: any;
