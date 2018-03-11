@@ -76,7 +76,6 @@ export class NgfmFile extends NgfmItem {
 
     /**
      * Size normalized to an appropriate unit, eg. 1 MB instead of 1048576 B
-     * @returns { value: number, unit: string}
      * eg. { value: 1, unit: 'MB'}
      */
     protected getHumanSize(): { value: number, unit: string } {
