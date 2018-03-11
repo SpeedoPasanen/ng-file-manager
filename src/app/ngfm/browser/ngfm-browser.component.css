@@ -32,7 +32,7 @@
 }
 
 .ngfm-folder-tile {
-    background: #a39f67;
+    background: #a7b1d1;
 }
 
 .ngfm-browser-menu {
@@ -40,4 +40,8 @@
     flex-wrap: wrap;
     flex-direction: row;
     margin-bottom: 0.5em;
+}
+
+.ngfm-file-extension {
+    margin: 0;
 }

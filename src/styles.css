@@ -24,3 +24,26 @@ h3 {
 h4 {
     font-size: 1.5em;
 }
+
+.loading-overlay {
+    position: absolute;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.loading-overlay.visible {
+    opacity: 1;
+}
+
+.loading-overlay i {
+    top: 50%;
+    left: 50%;
+    color: #555;
+    position: absolute;
+}

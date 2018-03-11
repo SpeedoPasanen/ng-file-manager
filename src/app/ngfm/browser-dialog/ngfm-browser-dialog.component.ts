@@ -6,11 +6,11 @@ import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmFolder } from '../models/ngfm-folder';
 import { NgfmItem } from '../models/ngfm-item';
 @Component({
-  selector: 'ngfm-dialog',
-  templateUrl: './ngfm-dialog.component.html',
-  styleUrls: ['./ngfm-dialog.component.css']
+  selector: 'ngfm-browser-dialog',
+  templateUrl: './ngfm-browser-dialog.component.html',
+  styleUrls: ['./ngfm-browser-dialog.component.css']
 })
-export class NgfmDialogComponent implements OnInit {
+export class NgfmBrowserDialogComponent implements OnInit {
   title = 'File Browser';
   path$: Observable<string[]>;
   root$: Observable<string[]>;
@@ -18,7 +18,7 @@ export class NgfmDialogComponent implements OnInit {
   pick: 'file' | 'folder' | null;
   constructor(
     @Inject(MAT_DIALOG_DATA) private dialogData: any,
-    private dialogRef: MatDialogRef<NgfmDialogComponent>
+    private dialogRef: MatDialogRef<NgfmBrowserDialogComponent>
   ) { }
 
   ngOnInit() {

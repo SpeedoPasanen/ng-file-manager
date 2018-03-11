@@ -11,6 +11,7 @@ import { NgfmFile } from '../models/ngfm-file';
 import { NgfmService } from '../service/ngfm.service';
 import { NgfmItem } from '../models/ngfm-item';
 import { Subscription } from 'rxjs/Subscription';
+import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
 
 @Component({
   selector: 'ngfm-browser',
@@ -34,7 +35,8 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('widthSource') widthSource: ElementRef
   constructor(
     private ngfm: NgfmService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private dialog: NgfmDialogService
   ) { }
 
   ngOnInit() {
@@ -83,7 +85,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     // const filter = this.pick ? { itemType: this.pick } : {}; // @Meditation: I donno if this is even a good idea. Better let user see what files are in there?
     this.ngfm.connector.ls(folder).pipe(take(1)).subscribe(items => {
       this.children = items;
-      this.selectedFiles = [];
+      this.selectedFiles = this.selectedFiles.map(selFile => items.find(item => item.hash === selFile.hash) as NgfmFile).filter(foundFile => !!foundFile).map(selFile => { selFile.selected = true; return selFile; });
       this.cdRef.markForCheck();
     });
   }
@@ -91,8 +93,8 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
   uploadDialog(folder: NgfmFolder) {
     this.ngfm.uploadDialog(folder).subscribe(result => this.refresh(folder));
   }
-  mkDir(folder: NgfmFolder) {
-    const name = prompt('Gimme a name');
+  async mkDir(folder: NgfmFolder) {
+    const name = await this.dialog.openPrompt('Folder Name', '', '');
     if (!name) {
       return;
     }
@@ -101,6 +103,22 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
   clicked(item: NgfmItem) {
     if (item.isFolder) {
       return this.navigate(item as NgfmFolder);
+    }
+    if (item.isFile) {
+      const file = (item as NgfmFile);
+      if (file.isImage) {
+        this.dialog.open(file.name, `<img style="max-width:100%;height:auto" src="${file.url}"/>`);
+      }
+      if (file.isVideo) {
+        return this.dialog.open(file.name,
+          `<video width="1280" height="720" autoplay controls class="img-fluid">
+          <source src="${file.url}" type="video/mp4">Selaimesi ei tue HTML5-videoita.</source>
+          </video>`);
+      }
+      if (file.isAudio) {
+        return this.dialog.open(file.name,
+          `<audio src="${file.url}" preload="auto" autoplay controls></audio>`);
+      }
     }
   }
   navigate(folder: NgfmFolder) {

@@ -1,0 +1,15 @@
+<div *ngIf="data.title && data.title.length && (!data.isPrompt)">
+    <h2 mat-dialog-title [innerHTML]="data.title"></h2>
+</div>
+<mat-dialog-content>
+    <div [innerHTML]="data.html"></div>
+    <mat-form-field *ngIf="data.isPrompt" class="mt-4 w-100">
+        <input matInput [(ngModel)]="promptValue" [placeholder]="data.title" />
+    </mat-form-field>
+</mat-dialog-content>
+<div *ngIf="buttons.length">
+    <mat-dialog-actions>
+        <span class="fill-space"></span>
+        <button *ngFor="let b of buttons" mat-raised-button color="{{b.color}}" (click)="clicked(b)" [innerHtml]="b.text"></button>
+    </mat-dialog-actions>
+</div>

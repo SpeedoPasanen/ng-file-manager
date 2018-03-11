@@ -12,8 +12,10 @@ export function NgfmConnectorHooks() {
                 this.beforeMethod$.next({ method: methodName, args });
                 let methodResult = originalMethod.apply(this, args);
                 if (methodResult instanceof Observable) {
+                    constructor.prototype.showOverlay(true);
                     methodResult = methodResult.pipe(tap(result => {
                         this.afterMethod$.next({ method: methodName, args, result });
+                        constructor.prototype.showOverlay(false);
                     }));
                 }
                 return methodResult;

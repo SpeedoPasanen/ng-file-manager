@@ -8,7 +8,7 @@ import { concat } from 'rxjs/observable/concat';
 import { NGFM_CONNECTOR } from '../connectors/constants';
 import { NgfmConnector } from '../connectors/ngfm-connector';
 import { NgfmFolder } from '../models/ngfm-folder';
-import { NgfmDialogComponent } from '../browser-dialog/ngfm-dialog.component';
+import { NgfmBrowserDialogComponent } from '../browser-dialog/ngfm-browser-dialog.component';
 
 @Injectable()
 export class NgfmService {
@@ -24,7 +24,7 @@ export class NgfmService {
    * @param path
    */
   openDialog(root: string[], path: string[], dialogData: any = {}) {
-    const dlg = this.dialog.open(NgfmDialogComponent, {
+    const dlg = this.dialog.open(NgfmBrowserDialogComponent, {
       width: '95vw',
       maxWidth: '95vw',
       height: '95vh',

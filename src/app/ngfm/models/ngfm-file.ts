@@ -134,4 +134,8 @@ export class NgfmFile extends NgfmItem {
      * Helper for checking MIME type
      */
     get isText() { return /text/.test(this.type); }
+    /**
+     * Helper for checking MIME type
+     */
+    get isAudio() { return /audio/.test(this.type); }
 }

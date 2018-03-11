@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { NgfmItem } from '../models/ngfm-item';
 import { Subject } from 'rxjs/Subject';
 export class NgfmConnector {
+  private overlay = null;
   beforeMethod$: Subject<any> = new Subject();
   afterMethod$: Subject<any> = new Subject();
   // TODO: add a type 'NgfmFilter' or sumthin
@@ -21,4 +22,32 @@ export class NgfmConnector {
   folderExists(folder: NgfmFolder): Observable<boolean> { throw Error('You must implement all methods of NgfmConnector') }
   fileExists(file: NgfmFile): Observable<boolean> { throw Error('You must implement all methods of NgfmConnector') }
   rename(item: NgfmItem, newName: string): Observable<NgfmItem> { throw Error('You must implement all methods of NgfmConnector') }
+  showOverlay(b = true) {
+    if (b && (!this.overlay)) {
+      this.overlay = this.createOverlay();
+    }
+    if (!b && (this.overlay)) {
+      this.removeOverlay();
+    }
+  }
+  createOverlay() {
+    const ovl = document.createElement('div');
+    ovl.className = 'loading-overlay';
+    setTimeout(() => {
+      ovl.className = 'loading-overlay visible';
+    }, 5);
+    const ovlIcon = document.createElement('i');
+    ovlIcon.className = 'fa fa-spin fa-spinner fa-2x';
+    ovl.appendChild(ovlIcon);
+    document.body.appendChild(ovl);
+    return ovl;
+  }
+  removeOverlay() {
+    this.overlay.className = 'loading-overlay';
+    const ovl = this.overlay;
+    setTimeout(() => {
+      document.body.removeChild(ovl);
+    }, 300);
+    this.overlay = null;
+  }
 }
