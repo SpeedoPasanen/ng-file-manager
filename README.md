@@ -5,6 +5,8 @@
 ##  WIP
 Not all functionalities have been implemented yet and many breaking changes yet to come. Try at your own risk - not ready for production yet.
 
+Demo: https://funkizer.github.io
+
 # To come:
 - A file manager for Angular which will feature:
     - Router Support
