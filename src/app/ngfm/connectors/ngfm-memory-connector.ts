@@ -7,13 +7,16 @@ import { timer } from 'rxjs/observable/timer';
 import { of } from 'rxjs/observable/of';
 import { map, switchMap, takeWhile, tap, last } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { NgfmItem } from '../models/ngfm-item';
+import { NgfmConnectorHooks } from './ngfm-connector-hooks';
 
 @Injectable()
-export class NgfmMemoryConnector implements NgfmConnector {
+@NgfmConnectorHooks()
+export class NgfmMemoryConnector extends NgfmConnector {
   private tree: any = {
     'public': { files: this.getDemoFiles(1, ['public']) },
     'public/Public Folder 1': { files: this.getDemoFiles(50, ['public'], ['Public Folder 1']) },
-    'private/1337': { files: this.getDemoFiles(1, ['private', '1337'], []) },
+    'private/1337': { files: this.getDemoFiles(10, ['private', '1337'], []) },
     'private/1337/Private Folder 1': { files: this.getDemoFiles(1, ['private', '1337'], ['Private Folder 1']) },
   };
   private getDemoFiles(amount: number, root: string[], path: string[] = []) {
@@ -28,6 +31,23 @@ export class NgfmMemoryConnector implements NgfmConnector {
       }));
     }
     return files;
+  }
+  rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
+    if (item.isFile) {
+      const file = item as NgfmFile;
+      const node = this.getNode(file.folder);
+      node.files.find(f => f.hash === file.hash).name = file.name = newName;
+      return timer(500).pipe(map(() => item));
+    }
+    if (item.isFolder) {
+      const folder = item as NgfmFolder;
+      const newFolder = new NgfmFolder(folder.root, [...folder.parent.path, newName]);
+      const node = this.getNode(folder);
+      const newNode = this.getNode(newFolder);
+      newNode.files = node.files;
+      delete this.tree[folder.toString()];
+      return timer(500).pipe(map(() => item));
+    }
   }
   private getNode(folder) {
     return this.tree[folder.toString()] = this.tree[folder.toString()] || { files: [] };
@@ -49,15 +69,13 @@ export class NgfmMemoryConnector implements NgfmConnector {
       map(folderExists => folderExists && (!!this.tree[file.folder.toString()].files.find(f => f.name === file.name)))
     );
   }
-  ls(folder: NgfmFolder): Observable<{ files: NgfmFile[], folders: NgfmFolder[] }> {
-    return this.mkDir(folder)
+  ls(folder: NgfmFolder): Observable<NgfmItem[]> {
+    return timer(300)
       .pipe(
-        map(foo => {
-          return {
-            files: this.getNode(folder).files,
-            folders: this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName]))
-          };
-        })
+        map(foo => [
+          ...this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName])),
+          ...this.getNode(folder).files.map(item => Object.assign(new NgfmFile(folder, item), item))
+        ])
       );
   }
   mkDir(folder: NgfmFolder): Observable<NgfmFolder> {

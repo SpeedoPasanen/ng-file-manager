@@ -1,18 +1,14 @@
 import { Observable } from 'rxjs/Observable';
 import { Subscriber } from 'rxjs/Subscriber';
 import { NgfmFolder } from './ngfm-folder';
-export class NgfmFile {
+import { NgfmItem } from './ngfm-item';
+export class NgfmFile extends NgfmItem {
     folder: NgfmFolder;
-
+    readonly itemType = 'file';
     /**
      * In case we're using this instance for uploading, save reference to the original native File.
      */
     nativeFile: File;
-
-    /**
-     * Full name eg. `my_pic.jpg`
-     */
-    name = '';
 
     /**
      * Lower case extension without comma, eg. `jpg`
@@ -65,6 +61,7 @@ export class NgfmFile {
     set thumbnail(s: string) { this._thumbnail = s; }
 
     constructor(folder: NgfmFolder, init: File | any) {
+        super(init);
         this.folder = folder;
         Object.keys(this).forEach(key => key in init ? this[key] = init[key] : this[key]);
         this.extension = this.name.replace(/[^\.]*./, '').toLowerCase();
@@ -129,13 +126,13 @@ export class NgfmFile {
     /**
      * Helper for checking MIME type
      */
-    isImage() { return /image/.test(this.type); }
+    get isImage() { return /image/.test(this.type); }
     /**
      * Helper for checking MIME type
      */
-    isVideo() { return /video/.test(this.type); }
+    get isVideo() { return /video/.test(this.type); }
     /**
      * Helper for checking MIME type
      */
-    isText() { return /text/.test(this.type); }
+    get isText() { return /text/.test(this.type); }
 }

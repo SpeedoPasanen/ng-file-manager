@@ -1,8 +1,10 @@
-<div class="ngfm-browser-item-tools" (click)="clicked($event)">
-  <span *ngIf="file && config.perms.editFile">
-    <i class="fa fa-trash"></i>
-  </span>
-  <span *ngIf="folder && config.perms.editFolder">
-    <i class="fa fa-trash"></i>
-  </span>
-</div>
+<button mat-button [matMenuTriggerFor]="menu" [disabled]="!items.length">
+  <i class="fa fa-chevron-circle-down">
+  </i>
+  <span class="ngfm-browser-item-tools-text">{{text}}</span>
+</button>
+<mat-menu #menu="matMenu" xPosition="after">
+  <button mat-menu-item *ngFor="let menuItem of menuItems" (click)="menuItem.action()">
+    {{menuItem.text}}
+  </button>
+</mat-menu>

@@ -1,10 +1,12 @@
 import { NgfmFile } from './ngfm-file';
-export class NgfmFolder {
-    name: string;
+import { NgfmItem } from './ngfm-item';
+export class NgfmFolder extends NgfmItem {
+    readonly itemType = 'folder';
     root: string[];
     path: string[];
     fullPath: string[];
     constructor(root: string[], path: string[]) {
+        super({ root, path });
         Object.assign(this, { root, path, fullPath: [...root, ...path] });
         this.name = path[path.length - 1] || root[root.length - 1] || '';
     }

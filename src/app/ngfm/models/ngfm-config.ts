@@ -1,12 +1,20 @@
 import { NgfmPerms } from './ngfm-perms';
 export class NgfmConfig {
     perms?: NgfmPerms = new NgfmPerms();
-    xsCols?= 2;
-    smCols?= 4;
-    mdCols?= 6;
-    lgCols?= 8;
-    xlCols?= 10;
-    constructor(init: NgfmConfig = {}) {
-        Object.assign(this, init);
+    /**
+     * Target item width as pixels. Amount of columns in the list will be calculated based on this.
+     */
+    listItemSize?= 180;
+    messages?= {
+        RENAME: 'Rename',
+        DELETE: 'Delete',
+        MOVE: 'Move',
+        UPLOAD: 'Upload',
+        CREATE_FOLDER: 'Create Folder',
+        SELECTED: 'selected',
+        SELECT_ALL: 'Select All',
+    }
+    constructor(init?: NgfmConfig) {
+        Object.assign(this, init || {});
     }
 }

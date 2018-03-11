@@ -1,17 +1,22 @@
 import { NgfmFolder } from '../models/ngfm-folder';
 import { NgfmFile } from '../models/ngfm-file';
 import { Observable } from 'rxjs/Observable';
-export abstract class NgfmConnector {
-  abstract ls(folder: NgfmFolder): Observable<{ files: NgfmFile[], folders: NgfmFolder[] }>
-  abstract mkDir(folder: NgfmFolder): Observable<NgfmFolder>
-  abstract rmDir(folder: NgfmFolder): Observable<NgfmFolder>
-  abstract rm(file: NgfmFile): Observable<NgfmFile>
+import { NgfmItem } from '../models/ngfm-item';
+import { Subject } from 'rxjs/Subject';
+export class NgfmConnector {
+  beforeMethod$: Subject<any> = new Subject();
+  afterMethod$: Subject<any> = new Subject();
+  ls(folder: NgfmFolder): Observable<NgfmItem[]> { throw Error('You must implement all methods of NgfmConnector') }
+  mkDir(folder: NgfmFolder): Observable<NgfmFolder> { throw Error('You must implement all methods of NgfmConnector') }
+  rmDir(folder: NgfmFolder): Observable<NgfmFolder> { throw Error('You must implement all methods of NgfmConnector') }
+  rm(file: NgfmFile): Observable<NgfmFile> { throw Error('You must implement all methods of NgfmConnector') }
   /**
    * 
    * @param file The NgfmFile to upload
-   * @Returns Observable of the progress between 0-1. Completes when it's done.
+   * @Returns Observable of progress between 0-1. Completes when done.
    */
-  abstract uploadFile(file: NgfmFile): Observable<number>
-  abstract folderExists(folder: NgfmFolder): Observable<boolean>
-  abstract fileExists(file: NgfmFile): Observable<boolean>
+  uploadFile(file: NgfmFile): Observable<number> { throw Error('You must implement all methods of NgfmConnector') }
+  folderExists(folder: NgfmFolder): Observable<boolean> { throw Error('You must implement all methods of NgfmConnector') }
+  fileExists(file: NgfmFile): Observable<boolean> { throw Error('You must implement all methods of NgfmConnector') }
+  rename(item: NgfmItem, newName: string): Observable<NgfmItem> { throw Error('You must implement all methods of NgfmConnector') }
 }

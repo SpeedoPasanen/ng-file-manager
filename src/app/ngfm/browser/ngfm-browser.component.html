@@ -1,53 +1,50 @@
+<div #widthSource></div>
 <div *ngIf="folder$|async as folder">
-  <p>
-    <button mat-button (click)="uploadDialog(folder)" *ngIf="(config$|async)?.perms.createFile">
+  <div class="ngfm-browser-menu" *ngIf="(config$|async) as config">
+    <button mat-button (click)="uploadDialog(folder)" *ngIf="config.perms.createFile">
       <i class="fa fa-plus"></i>
-      <span i18n>Upload</span>
+      <span>{{config?.messages.UPLOAD}}</span>
     </button>
-    <button mat-button (click)="mkDir(folder)" *ngIf="(config$|async)?.perms.createFolder">
+    <button mat-button (click)="mkDir(folder)" *ngIf="config.perms.createFolder">
       <i class="fa fa-plus"></i>
-      <span i18n>Create Folder</span>
+      <span>{{config?.messages.CREATE_FOLDER}}</span>
     </button>
-  </p>
+    <span *ngIf="config.perms.hasAny">
+      <ngfm-browser-item-tools [items]="selectedFiles" [config]="(config$|async)" [isFile]="true" [text]="selectedFiles.length + ' ' + config?.messages.SELECTED"></ngfm-browser-item-tools>
+    </span>
+    <span *ngIf="config.perms.hasAny">
+      <button mat-button (click)="selectAll()">
+        <i class="fa fa-check"></i> {{config.messages.SELECT_ALL}}</button>
+    </span>
+  </div>
   <div *ngIf="gridCols$|async as gridCols">
-    <div *ngIf="children$|async as children">
-      <mat-grid-list [cols]="gridCols">
-        <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)" class="ngfm-folder-tile">
-          <mat-grid-tile-header>
-            <p>&laquo;</p>
-          </mat-grid-tile-header>
-          <div class="folder-icon">
-            <i class="fa fa-folder fa-2x"></i>
-            <i class="fa back-icon fa-caret-left"></i>
-          </div>
-          <mat-grid-tile-footer>
-            <ngfm-browser-item-tools [folder]="item" [config]="(config$|async)"></ngfm-browser-item-tools>
-          </mat-grid-tile-footer>
-        </mat-grid-tile>
+    <mat-grid-list [cols]="gridCols" class="ngfm-grid-list">
+      <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)" class="ngfm-folder-tile">
+        <mat-grid-tile-header>
+          <p>&bull; &bull;</p>
+        </mat-grid-tile-header>
+        <div class="folder-icon">
+          <i class="fa fa-folder fa-2x"></i>
+          <i class="fa back-icon fa-caret-left"></i>
+        </div>
+        <mat-grid-tile-footer></mat-grid-tile-footer>
+      </mat-grid-tile>
 
-        <mat-grid-tile (click)="navigate(item)" *ngFor="let item of children.folders" class="ngfm-folder-tile">
-          <mat-grid-tile-header>
-            <p>{{item.name}}</p>
-          </mat-grid-tile-header>
-          <div class="folder-icon">
-            <i class="fa fa-folder fa-2x"></i>
-          </div>
-          <mat-grid-tile-footer>
-            <ngfm-browser-item-tools [folder]="item" [config]="(config$|async)"></ngfm-browser-item-tools>
-          </mat-grid-tile-footer>
-        </mat-grid-tile>
+      <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children" [class.ngfm-folder-tile]="item.isFolder" [class.ngfm-file-tile]="item.isFile"
+        [style.background-image]="item.isFile && item.isImage ? 'url(' + item.thumbnail +')' : ''">
+        <mat-grid-tile-header>
+          <p>{{item.name}}</p>
+        </mat-grid-tile-header>
+        <div class="folder-icon" *ngIf="item.isFolder">
+          <i class="fa fa-folder fa-2x"></i>
+        </div>
+        <mat-grid-tile-footer *ngIf="(config$|async)?.perms.hasAny">
+          <ngfm-browser-item-tools [items]="[item]" [config]="(config$|async)" [isFile]="item.isFile"></ngfm-browser-item-tools>
+          <mat-checkbox *ngIf="item.isFile" [(ngModel)]="item.selected" (change)="selectionChange(item)"></mat-checkbox>
+        </mat-grid-tile-footer>
+      </mat-grid-tile>
 
-        <mat-grid-tile *ngFor="let item of children.files" [style.background-image]="item.isImage() ? 'url(' + item.thumbnail +')' : ''"
-          class="ngfm-file-tile">
-          <mat-grid-tile-header>
-            <p>{{item.name}}</p>
-          </mat-grid-tile-header>
-          <mat-grid-tile-footer>
-            <ngfm-browser-item-tools [file]="item" [config]="(config$|async)"></ngfm-browser-item-tools>
-          </mat-grid-tile-footer>
-        </mat-grid-tile>
 
-      </mat-grid-list>
-    </div>
+    </mat-grid-list>
   </div>
 </div>
