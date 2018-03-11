@@ -10,7 +10,7 @@ export class NgfmItem {
     get isFile() { return this.itemType === 'file'; }
     get isFolder() { return this.itemType === 'folder'; }
     constructor(init: any) {
-        this.hash = Object.entries(init).reduce((acc, cur) => `${acc}#${cur.join('|')}`, '');
+        this.hash = (<any>Object).entries(init).reduce((acc, cur) => `${acc}#${cur.join('|')}`, '');
 
     }
 }
