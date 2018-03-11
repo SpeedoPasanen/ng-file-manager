@@ -32,6 +32,13 @@ export class NgfmMemoryConnector extends NgfmConnector {
     }
     return files;
   }
+  moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): Observable<{ files: NgfmFile[], from: NgfmFolder, to: NgfmFolder }> {
+    const fromNodee = this.getNode(from);
+    const toNode = this.getNode(to);
+    fromNodee.files = fromNodee.files.filter(nodeFile => !files.find(file => nodeFile.hash === file.hash));
+    toNode.files = [...toNode.files, ...files];
+    return timer(500).pipe(map(() => { return { files, from, to }; }));
+  }
   rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
     if (item.isFile) {
       const file = item as NgfmFile;
@@ -69,12 +76,12 @@ export class NgfmMemoryConnector extends NgfmConnector {
       map(folderExists => folderExists && (!!this.tree[file.folder.toString()].files.find(f => f.name === file.name)))
     );
   }
-  ls(folder: NgfmFolder): Observable<NgfmItem[]> {
+  ls(folder: NgfmFolder, filter: any = {}): Observable<NgfmItem[]> {
     return timer(300)
       .pipe(
         map(foo => [
-          ...this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName])),
-          ...this.getNode(folder).files.map(item => Object.assign(new NgfmFile(folder, item), item))
+          ...(filter.itemType === 'file' ? [] : this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName]))),
+          ...(filter.itemType === 'folder' ? [] : this.getNode(folder).files.map(item => Object.assign(new NgfmFile(folder, item), item)))
         ])
       );
   }

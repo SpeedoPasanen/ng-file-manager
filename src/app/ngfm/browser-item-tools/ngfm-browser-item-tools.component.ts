@@ -5,6 +5,7 @@ import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmConnector } from '../connectors/ngfm-connector';
 import { NGFM_CONNECTOR } from '../connectors/constants';
 import { NgfmItem } from '../models/ngfm-item';
+import { NgfmService } from '../public_api';
 
 @Component({
   selector: 'ngfm-browser-item-tools',
@@ -26,7 +27,8 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
     ev.stopImmediatePropagation();
   }
   constructor(
-    @Inject(NGFM_CONNECTOR) private connector: NgfmConnector
+    @Inject(NGFM_CONNECTOR) private connector: NgfmConnector,
+    private ngfm: NgfmService
   ) { }
   ngOnInit() {
     this.buildMenu();
@@ -60,6 +62,12 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
           text: this.config.messages.RENAME,
           action: () => this.rename(this.items[0])
         },
+        {
+          isMulti: true,
+          perms: 'editFile',
+          text: this.config.messages.MOVE,
+          action: () => this.moveFile(this.items as NgfmFile[])
+        },
       ] :
       [
         {
@@ -83,6 +91,14 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
     if (newName) {
       this.connector.rename(item, newName + (item.isFile ? '.' + (item as NgfmFile).extension : '')).subscribe();
     }
+  }
+  moveFile(files: NgfmFile[]) {
+    const from = files[0].folder;
+    this.ngfm.pickFolder(from.root, from.path).subscribe((to: NgfmFolder) => {
+      if (to) {
+        this.ngfm.connector.moveFiles(files, from, to).subscribe();
+      }
+    });
   }
 
 }

@@ -38,7 +38,10 @@
         <div class="folder-icon" *ngIf="item.isFolder">
           <i class="fa fa-folder fa-2x"></i>
         </div>
-        <mat-grid-tile-footer *ngIf="(config$|async)?.perms.hasAny">
+        <mat-grid-tile-footer *ngIf="pick && pick === item.itemType">
+          <button mat-button (click)="choose(item, $event)">{{(config$|async)?.messages.PICK}}</button>
+        </mat-grid-tile-footer>
+        <mat-grid-tile-footer *ngIf="(!pick) && (config$|async)?.perms.hasAny">
           <ngfm-browser-item-tools [items]="[item]" [config]="(config$|async)" [isFile]="item.isFile"></ngfm-browser-item-tools>
           <mat-checkbox *ngIf="item.isFile" [(ngModel)]="item.selected" (change)="selectionChange(item)"></mat-checkbox>
         </mat-grid-tile-footer>

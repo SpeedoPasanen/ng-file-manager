@@ -23,15 +23,19 @@ export class NgfmService {
    * @param root
    * @param path
    */
-  openDialog(root: string[], path: string[]) {
+  openDialog(root: string[], path: string[], dialogData: any = {}) {
     const dlg = this.dialog.open(NgfmDialogComponent, {
       width: '95vw',
       maxWidth: '95vw',
       height: '95vh',
       maxHeight: '95vh',
-      data: { root, path }
+      data: Object.assign({ root, path }, dialogData)
     });
     return dlg.afterClosed();
+  }
+
+  pickFolder(root: string[], path: string[]) {
+    return this.openDialog(root, path, { pick: 'folder' });
   }
 
   /**

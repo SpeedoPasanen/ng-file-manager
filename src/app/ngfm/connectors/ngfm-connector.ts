@@ -6,10 +6,12 @@ import { Subject } from 'rxjs/Subject';
 export class NgfmConnector {
   beforeMethod$: Subject<any> = new Subject();
   afterMethod$: Subject<any> = new Subject();
-  ls(folder: NgfmFolder): Observable<NgfmItem[]> { throw Error('You must implement all methods of NgfmConnector') }
+  // TODO: add a type 'NgfmFilter' or sumthin
+  ls(folder: NgfmFolder, filter: any = {}): Observable<NgfmItem[]> { throw Error('You must implement all methods of NgfmConnector') }
   mkDir(folder: NgfmFolder): Observable<NgfmFolder> { throw Error('You must implement all methods of NgfmConnector') }
   rmDir(folder: NgfmFolder): Observable<NgfmFolder> { throw Error('You must implement all methods of NgfmConnector') }
   rm(file: NgfmFile): Observable<NgfmFile> { throw Error('You must implement all methods of NgfmConnector') }
+  moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): Observable<{ files: NgfmFile[], from: NgfmFolder, to: NgfmFolder }> { throw Error('You must implement all methods of NgfmConnector') }
   /**
    * 
    * @param file The NgfmFile to upload

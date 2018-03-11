@@ -19,11 +19,13 @@ import { Subscription } from 'rxjs/Subscription';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() pick: 'file' | 'folder' | null;
   @Input() root$: Observable<string[]>;
   @Input() path$: Observable<string[]>;
   @Input() config$: Observable<NgfmConfig>;
   @HostBinding('class.ngfm-browser') private _hostClass = true;
   @Output() navigated: EventEmitter<NgfmFolder> = new EventEmitter();
+  @Output() picked: EventEmitter<NgfmItem> = new EventEmitter();
   gridCols$: Observable<number>;
   folder$: Observable<NgfmFolder>;
   children: NgfmItem[];
@@ -50,7 +52,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
             if (child.isFile) { this.selectedFiles.splice(this.children.indexOf(child), 1); }
             this.cdRef.markForCheck();
             break;
-          case 'rename': case 'mkDir': return this.refresh();
+          case 'rename': case 'mkDir': case 'moveFiles': return this.refresh();
         }
       })
     ];
@@ -78,6 +80,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
       this.folder$.pipe(take(1)).subscribe(folder => this.refresh(folder));
       return;
     }
+    // const filter = this.pick ? { itemType: this.pick } : {}; // @Meditation: I donno if this is even a good idea. Better let user see what files are in there?
     this.ngfm.connector.ls(folder).pipe(take(1)).subscribe(items => {
       this.children = items;
       this.selectedFiles = [];
@@ -101,6 +104,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   navigate(folder: NgfmFolder) {
+    this.children = [];
     this.navigated.next(folder);
   }
   ngOnChanges(changes: SimpleChanges) {
@@ -121,5 +125,9 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     const allFiles: NgfmFile[] = this.children.filter(item => item.isFile) as NgfmFile[];
     this.selectedFiles = this.selectedFiles.length === allFiles.length ? [] : [...allFiles as NgfmFile[]];
     allFiles.forEach(file => file.selected = this.selectedFiles.indexOf(file) > -1);
+  }
+  choose(item: NgfmItem, ev) {
+    ev.stopPropagation();
+    this.picked.emit(item);
   }
 }
