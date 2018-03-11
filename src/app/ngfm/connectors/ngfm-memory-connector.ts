@@ -43,7 +43,7 @@ export class NgfmMemoryConnector extends NgfmConnector {
     if (item.isFile) {
       const file = item as NgfmFile;
       const node = this.getNode(file.folder);
-      node.files.find(f => f.hash === file.hash).name = file.name = newName;
+      (node.files.find(f => f.hash === file.hash) || {}).name = file.name = newName;
       return timer(500).pipe(map(() => item));
     }
     if (item.isFolder) {

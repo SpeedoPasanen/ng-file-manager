@@ -9,10 +9,10 @@
       <i class="fa fa-plus"></i>
       <span>{{config?.messages.CREATE_FOLDER}}</span>
     </button>
-    <span *ngIf="config.perms.hasAny">
+    <span *ngIf="(!pick) && config.perms.hasAny">
       <ngfm-browser-item-tools [items]="selectedFiles" [config]="(config$|async)" [isFile]="true" [text]="selectedFiles.length + ' ' + config?.messages.SELECTED"></ngfm-browser-item-tools>
     </span>
-    <span *ngIf="config.perms.hasAny">
+    <span *ngIf="(!pick) && config.perms.hasAny">
       <button mat-button (click)="selectAll()">
         <i class="fa fa-check"></i> {{config.messages.SELECT_ALL}}</button>
     </span>
