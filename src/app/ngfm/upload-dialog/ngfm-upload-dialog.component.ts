@@ -8,6 +8,7 @@ import { concat } from 'rxjs/observable/concat';
 import { NgfmConnector } from '../connectors/ngfm-connector';
 import { NgfmUploadStatus } from '../connectors/ngfm-upload-status';
 import { NGFM_CONNECTOR } from '../connectors/constants';
+import { NgfmApi } from '../connectors/ngfm-api';
 @Component({
   selector: 'ngfm-upload-dialog',
   templateUrl: './ngfm-upload-dialog.component.html',
@@ -21,7 +22,7 @@ export class NgfmUploadDialogComponent implements OnInit {
   status: NgfmUploadStatus;
   constructor(
     @Inject(MAT_DIALOG_DATA) private dialogData: any,
-    @Inject(NGFM_CONNECTOR) private connector: NgfmConnector,
+    private ngfm: NgfmApi,
     private dialogRef: MatDialogRef<NgfmUploadDialogComponent>
   ) { }
 
@@ -76,7 +77,7 @@ export class NgfmUploadDialogComponent implements OnInit {
     this.dialogRef.disableClose = true;
     this.status = new NgfmUploadStatus(this.files);
     concat(...this.files.map(
-      file => this.connector.uploadFile(file).pipe(
+      file => this.ngfm.uploadFile(file).pipe(
         tap(progress => {
           this.status.currentProgress$.next(progress);
         }, (err) => {
@@ -88,7 +89,8 @@ export class NgfmUploadDialogComponent implements OnInit {
     )).subscribe(() => { }, err => {
 
     }, () => {
-      this.dialogRef.close(this.files)
+      this.ngfm.ls(this.folder);
+      this.dialogRef.close(this.files);
     });
   }
 }

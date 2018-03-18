@@ -45,8 +45,9 @@ export class NgfmFile extends NgfmItem {
      * URL where the file is served
      */
     url: string = '';
-    private _download: string;
-    private _thumbnail: string;
+    private _download: string = '';
+    private _thumbnail: string = '';
+    private _preview: string = '';
 
     /**
      * Optional download URL. Returns `this.url` when not set.
@@ -60,10 +61,16 @@ export class NgfmFile extends NgfmItem {
     get thumbnail(): string { return this._thumbnail || this.url; }
     set thumbnail(s: string) { this._thumbnail = s; }
 
+    /**
+     * Optional preview URL. Returns `this.url` when not set and mime type is image/*.
+     */
+    get preview(): string { return this._preview || (this.isImage ? this.url : null); }
+    set preview(s: string) { this._preview = s; }
+
     constructor(folder: NgfmFolder, init: File | any) {
         super(init);
         this.folder = folder;
-        Object.keys(this).forEach(key => key in init ? this[key] = init[key] : this[key]);
+        ['download', 'thumbnail', 'preview', ...Object.keys(this)].forEach(key => this[key] = key in init ? init[key] : this[key]);
         this.extension = this.name.replace(/[^\.]*./, '').toLowerCase();
         this.nativeFile = init instanceof File ? init : null;
         this.humanSize = this.getHumanSize();

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgfmService } from './ngfm/service/ngfm.service';
+import { NgfmApi } from './ngfm/connectors/ngfm-api';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +8,7 @@ import { NgfmService } from './ngfm/service/ngfm.service';
 })
 export class AppComponent {
   constructor(
-    private ngfm: NgfmService
+    private ngfm: NgfmApi
   ) {
 
   }

@@ -5,8 +5,8 @@ import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmConnector } from '../connectors/ngfm-connector';
 import { NGFM_CONNECTOR } from '../connectors/constants';
 import { NgfmItem } from '../models/ngfm-item';
-import { NgfmService } from '../service/ngfm.service';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
+import { NgfmApi } from '../connectors/ngfm-api';
 
 @Component({
   selector: 'ngfm-browser-item-tools',
@@ -28,8 +28,7 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
     ev.stopImmediatePropagation();
   }
   constructor(
-    @Inject(NGFM_CONNECTOR) private connector: NgfmConnector,
-    private ngfm: NgfmService,
+    private ngfm: NgfmApi,
     private dialog: NgfmDialogService
   ) { }
   ngOnInit() {
@@ -56,7 +55,7 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
           isMulti: true,
           perms: 'removeFile',
           text: this.config.messages.DELETE,
-          action: () => this.items.forEach(item => this.connector.rm(item as NgfmFile).subscribe()) // TODO: move all actions to the service
+          action: () => this.ngfm.rmFiles(this.items as NgfmFile[]).subscribe()
         },
         {
           isMulti: false,
@@ -76,7 +75,7 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
           isMulti: true,
           perms: 'removeFolder',
           text: this.config.messages.DELETE,
-          action: () => this.items.forEach(item => this.connector.rmDir(item as NgfmFolder).subscribe()) // TODO: move all actions to the service
+          action: () => this.ngfm.rmDirs(this.items as NgfmFolder[]).subscribe()
         },
         {
           isMulti: false,
@@ -90,16 +89,16 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
   }
   // TODO: move all actions to the service
   async rename(item: NgfmItem) {
-    const newName = await this.dialog.openPrompt(this.config.messages.RENAME, '', item.isFile ? item.name.replace(/\.[^\.]*$/, '') : '');
+    const newName = await this.dialog.openPrompt(this.config.messages.RENAME, '', item.isFile ? item.name.replace(/\.[^\.]*$/, '') : item.name);
     if (newName) {
-      this.connector.rename(item, newName + (item.isFile ? '.' + (item as NgfmFile).extension : '')).subscribe();
+      this.ngfm.rename(item, newName + (item.isFile ? '.' + (item as NgfmFile).extension : '')).subscribe();
     }
   }
   moveFile(files: NgfmFile[]) {
     const from = files[0].folder;
     this.ngfm.pickFolder(from.root, from.path).subscribe((to: NgfmFolder) => {
       if (to) {
-        this.ngfm.connector.moveFiles(files, from, to).subscribe();
+        this.ngfm.moveFiles(files, from, to).subscribe();
       }
     });
   }

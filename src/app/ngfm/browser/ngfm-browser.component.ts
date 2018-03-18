@@ -3,15 +3,15 @@ import { Observable } from 'rxjs/Observable';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { fromEvent } from 'rxjs/observable/fromEvent';
 import { of } from 'rxjs/observable/of';
-import { map, tap, switchMap, startWith, take } from 'rxjs/operators';
+import { map, tap, switchMap, startWith, take, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmFolder } from '../models/ngfm-folder';
 import { NgfmFile } from '../models/ngfm-file';
-import { NgfmService } from '../service/ngfm.service';
 import { NgfmItem } from '../models/ngfm-item';
-import { Subscription } from 'rxjs/Subscription';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
+import { NgfmApi } from '../connectors/ngfm-api';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Component({
   selector: 'ngfm-browser',
@@ -29,12 +29,11 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
   @Output() picked: EventEmitter<NgfmItem> = new EventEmitter();
   gridCols$: Observable<number>;
   folder$: Observable<NgfmFolder>;
-  children: NgfmItem[];
-  private subscriptions: Subscription[];
+  children$: BehaviorSubject<NgfmItem[]>;
   selectedFiles: NgfmFile[] = [];
   @ViewChild('widthSource') widthSource: ElementRef
   constructor(
-    private ngfm: NgfmService,
+    private ngfm: NgfmApi,
     private cdRef: ChangeDetectorRef,
     private dialog: NgfmDialogService
   ) { }
@@ -45,21 +44,8 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
       startWith(8),
       switchMap(() => this.getColCount()),
     );
-    this.subscriptions = [
-      this.ngfm.connector.afterMethod$.subscribe(data => {
-        switch (data.method) {
-          case 'rm': case 'rmDir':
-            const child = this.children.find(c => c.hash === data.result.hash);
-            this.children.splice(this.children.indexOf(child), 1);
-            if (child.isFile) { this.selectedFiles.splice(this.children.indexOf(child), 1); }
-            this.cdRef.markForCheck();
-            break;
-          case 'rename': case 'mkDir': case 'moveFiles': return this.refresh();
-        }
-      })
-    ];
   }
-  ngOnDestroy() { this.subscriptions.forEach(s => s.unsubscribe()); }
+  ngOnDestroy() { }
   getColCount(): Observable<number> {
     const containerWidth = this.widthSource.nativeElement.offsetWidth;
     return this.config$.pipe(
@@ -73,6 +59,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     this.folder$ = combineLatest(this.root$, this.path$)
       .pipe(
         map(([root, path]) => new NgfmFolder(root, path)),
+        distinctUntilChanged((a, b) => a.hash === b.hash),
         tap(this.refresh.bind(this))
       );
   }
@@ -82,23 +69,29 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
       this.folder$.pipe(take(1)).subscribe(folder => this.refresh(folder));
       return;
     }
+    console.log('browser.refresh');
     // const filter = this.pick ? { itemType: this.pick } : {}; // @Meditation: I donno if this is even a good idea. Better let user see what files are in there?
-    this.ngfm.connector.ls(folder).pipe(take(1)).subscribe(items => {
-      this.children = items;
-      this.selectedFiles = this.selectedFiles.map(selFile => items.find(item => item.hash === selFile.hash) as NgfmFile).filter(foundFile => !!foundFile).map(selFile => { selFile.selected = true; return selFile; });
-      this.cdRef.markForCheck();
-    });
+    this.children$ = this.ngfm.ls(folder).pipe(
+      tap(items => {
+        // this.children = items;
+        this.selectedFiles = this.selectedFiles.map(selFile => items.find(item => item.hash === selFile.hash) as NgfmFile).filter(foundFile => !!foundFile).map(selFile => { selFile.selected = true; return selFile; });
+        this.cdRef.markForCheck();
+      })) as BehaviorSubject<NgfmItem[]>;
   }
 
   uploadDialog(folder: NgfmFolder) {
-    this.ngfm.uploadDialog(folder).subscribe(result => this.refresh(folder));
+    this.dialog.uploadDialog(folder).subscribe();
   }
-  async mkDir(folder: NgfmFolder) {
-    const name = await this.dialog.openPrompt('Folder Name', '', '');
-    if (!name) {
-      return;
-    }
-    this.ngfm.mkSubDir(folder, name).subscribe(() => this.refresh(folder));
+  mkDir(folder: NgfmFolder) {
+    this.dialog.openPrompt('Folder Name', '', '').then(folderName => {
+      if (!folderName) {
+        return;
+      }
+      this.ngfm.mkSubDir(folder, folderName).subscribe();
+    });
+  }
+  trackByHash(idx: number, item: NgfmItem) {
+    return item.hash;
   }
   clicked(item: NgfmItem) {
     if (item.isFolder) {
@@ -106,13 +99,13 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (item.isFile) {
       const file = (item as NgfmFile);
-      if (file.isImage) {
-        this.dialog.open(file.name, `<img style="max-width:100%;height:auto" src="${file.url}"/>`);
+      if (file.preview) {
+        this.dialog.open(file.name, '', null, { img: file.preview });
       }
       if (file.isVideo) {
         return this.dialog.open(file.name,
           `<video width="1280" height="720" autoplay controls class="img-fluid">
-          <source src="${file.url}" type="video/mp4">Selaimesi ei tue HTML5-videoita.</source>
+          <source src="${file.url}" type="video/mp4">Your browser does not support HTML5 video.</source>
           </video>`);
       }
       if (file.isAudio) {
@@ -122,7 +115,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   navigate(folder: NgfmFolder) {
-    this.children = [];
+    // this.children = [];
     this.navigated.next(folder);
   }
   ngOnChanges(changes: SimpleChanges) {
@@ -140,9 +133,11 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedFiles = [...this.selectedFiles];
   }
   selectAll() {
-    const allFiles: NgfmFile[] = this.children.filter(item => item.isFile) as NgfmFile[];
-    this.selectedFiles = this.selectedFiles.length === allFiles.length ? [] : [...allFiles as NgfmFile[]];
-    allFiles.forEach(file => file.selected = this.selectedFiles.indexOf(file) > -1);
+    this.children$.pipe(take(1)).subscribe(children => {
+      const allFiles: NgfmFile[] = children.filter(item => item.isFile) as NgfmFile[];
+      this.selectedFiles = this.selectedFiles.length === allFiles.length ? [] : [...allFiles as NgfmFile[]];
+      allFiles.forEach(file => file.selected = this.selectedFiles.indexOf(file) > -1);
+    });
   }
   choose(item: NgfmItem, ev) {
     ev.stopPropagation();

@@ -1,3 +1,19 @@
 .mat-dialog-title {
     margin: 0 0 5px 0;
 }
+
+.mat-dialog-content {
+    flex-direction: column;
+}
+
+.mat-dialog-content>div {
+    display: flex;
+    flex: 0 1 auto;
+    max-height: 100%;
+}
+
+.mat-dialog-content img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}

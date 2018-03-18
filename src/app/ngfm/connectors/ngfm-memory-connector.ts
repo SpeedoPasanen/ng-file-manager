@@ -8,11 +8,9 @@ import { of } from 'rxjs/observable/of';
 import { map, switchMap, takeWhile, tap, last } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { NgfmItem } from '../models/ngfm-item';
-import { NgfmConnectorHooks } from './ngfm-connector-hooks';
 
 @Injectable()
-@NgfmConnectorHooks()
-export class NgfmMemoryConnector extends NgfmConnector {
+export class NgfmMemoryConnector implements NgfmConnector {
   private tree: any = {
     'public': { files: this.getDemoFiles(1, ['public']) },
     'public/Public Folder 1': { files: this.getDemoFiles(50, ['public'], ['Public Folder 1']) },
@@ -24,10 +22,14 @@ export class NgfmMemoryConnector extends NgfmConnector {
     while (amount > files.length) {
       const w = Math.round(Math.random() * 800 + 200);
       const h = Math.round(Math.random() * 800 + 200);
+      const fakePdf = Math.random() > 0.5;
+      const url = `https://placehold.it/${w}x${h}`;
       files.push(new NgfmFile(new NgfmFolder(root, path), {
-        name: `${w}x${h} demo file.jpg`, url: `https://placehold.it/${w}x${h}`,
+        name: fakePdf ? 'Fake PDF with a preview.pdf' : `${w}x${h} demo file.jpg`,
+        url,
+        preview: url,
         size: 1024 + Math.round(Math.random() * 20000000),
-        type: 'image/jpeg'
+        type: fakePdf ? 'application/pdf' : 'image/jpeg'
       }));
     }
     return files;
@@ -37,24 +39,22 @@ export class NgfmMemoryConnector extends NgfmConnector {
     const toNode = this.getNode(to);
     fromNodee.files = fromNodee.files.filter(nodeFile => !files.find(file => nodeFile.hash === file.hash));
     toNode.files = [...toNode.files, ...files];
-    return timer(500).pipe(map(() => { return { files, from, to }; }));
+    return timer(700).pipe(map(() => { return { files, from, to }; }));
   }
   rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
     if (item.isFile) {
       const file = item as NgfmFile;
       const node = this.getNode(file.folder);
       (node.files.find(f => f.hash === file.hash) || {}).name = file.name = newName;
-      return timer(500).pipe(map(() => item));
+      return timer(800).pipe(map(() => item));
     }
-    if (item.isFolder) {
-      const folder = item as NgfmFolder;
-      const newFolder = new NgfmFolder(folder.root, [...folder.parent.path, newName]);
-      const node = this.getNode(folder);
-      const newNode = this.getNode(newFolder);
-      newNode.files = node.files;
-      delete this.tree[folder.toString()];
-      return timer(500).pipe(map(() => item));
-    }
+    const folder = item as NgfmFolder;
+    const newFolder = new NgfmFolder(folder.root, [...folder.parent.path, newName]);
+    const node = this.getNode(folder);
+    const newNode = this.getNode(newFolder);
+    newNode.files = node.files;
+    delete this.tree[folder.toString()];
+    return timer(800).pipe(map(() => item));
   }
   private getNode(folder) {
     return this.tree[folder.toString()] = this.tree[folder.toString()] || { files: [] };
@@ -77,7 +77,8 @@ export class NgfmMemoryConnector extends NgfmConnector {
     );
   }
   ls(folder: NgfmFolder, filter: any = {}): Observable<NgfmItem[]> {
-    return timer(300)
+    console.log('connector.ls');
+    return timer(400)
       .pipe(
         map(foo => [
           ...(filter.itemType === 'file' ? [] : this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName]))),
@@ -97,8 +98,9 @@ export class NgfmMemoryConnector extends NgfmConnector {
       return of(file);
     }
     const files = this.tree[file.folder.toString()].files;
-    files.splice(files.indexOf(file), 1);
-    return timer(100).pipe(map(foo => file));
+    const treeFile = files.find(f => f.hash === file.hash);
+    files.splice(files.indexOf(treeFile), 1);
+    return timer(100).pipe(map(foo => treeFile));
   }
   uploadFile(file: NgfmFile): Observable<number> {
     const observable = this.mkDir(file.folder).pipe(

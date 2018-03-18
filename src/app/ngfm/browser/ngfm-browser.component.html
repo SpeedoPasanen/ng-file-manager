@@ -30,8 +30,8 @@
         <mat-grid-tile-footer></mat-grid-tile-footer>
       </mat-grid-tile>
 
-      <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children" [class.ngfm-folder-tile]="item.isFolder" [class.ngfm-file-tile]="item.isFile"
-        [style.background-image]="item.isFile && item.isImage ? 'url(' + item.thumbnail +')' : ''">
+      <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children$|async trackBy: trackByHash" [class.ngfm-folder-tile]="item.isFolder"
+        [class.ngfm-file-tile]="item.isFile" [style.background-image]="item.thumbnail ? 'url(' + item.thumbnail +')' : ''">
         <mat-grid-tile-header>
           <p>{{item.name}}</p>
         </mat-grid-tile-header>
@@ -40,7 +40,9 @@
         </div>
         <i *ngIf="item.isFile && item.isAudio" class="fa fa-volume-up"></i>
         <i *ngIf="item.isFile && item.isVideo" class="fa fa-video"></i>
-        <p class="ngfm-file-extension" *ngIf="item.isFile && !(item.isAudio||item.isVideo||item.isImage)">{{item.extension.toUpperCase()}}</p>
+        <div class="ngfm-file-extension" *ngIf="item.isFile && !(item.isAudio||item.isVideo||item.isImage)">
+          <p>{{item.extension}}</p>
+        </div>
         <mat-grid-tile-footer *ngIf="pick && pick === item.itemType">
           <button mat-button (click)="choose(item, $event)">{{(config$|async)?.messages.PICK}}</button>
         </mat-grid-tile-footer>
