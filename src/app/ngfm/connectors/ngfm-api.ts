@@ -104,9 +104,9 @@ export class NgfmApi {
     }
     protected createOverlay() {
         const ovl = document.createElement('div');
-        ovl.className = 'loading-overlay';
+        ovl.className = 'ngfm-overlay';
         setTimeout(() => {
-            ovl.className = 'loading-overlay visible';
+            ovl.className = 'ngfm-overlay visible';
         }, 5);
         const ovlIcon = document.createElement('i');
         ovlIcon.className = 'fa fa-spin fa-spinner';
@@ -116,7 +116,7 @@ export class NgfmApi {
         return ovl;
     }
     protected removeOverlay() {
-        this.overlay.className = 'loading-overlay';
+        this.overlay.className = 'ngfm-overlay';
         const ovl = this.overlay;
         setTimeout(() => {
             document.body.removeChild(ovl);

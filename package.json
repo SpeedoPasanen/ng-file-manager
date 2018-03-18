@@ -1,6 +1,6 @@
 {
   "name": "ng-file-manager",
-  "version": "0.0.0006",
+  "version": "0.0.0007",
   "license": "MIT",
   "author": "@funkizer",
   "repository": {
@@ -13,7 +13,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build": "ng-packagr -p ng-package.json",
+    "bundle-styles": "scss-bundle -c scss-bundle.config.json",
+    "build": "ng-packagr -p ng-package.json && npm run bundle-styles",
     "pub": "npm publish dist",
     "build-pub": "npm run build && npm run pub"
   },
@@ -53,6 +54,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "ng-packagr": "^2.2.0",
     "protractor": "~5.1.2",
+    "scss-bundle": "^2.1.3",
     "ts-node": "~4.1.0",
     "tsickle": "^0.27.2",
     "tslint": "~5.9.1",

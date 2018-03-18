@@ -1,0 +1,4 @@
+{
+    "entry": "./src/_theming.scss",
+    "dest": "dist/_theming.scss"
+}

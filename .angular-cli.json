@@ -19,7 +19,8 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "",
       "styles": [
-        "styles.css",
+        "styles.scss",
+        "_theming.scss",
         "../node_modules/font-awesome/css/font-awesome.min.css"
       ],
       "scripts": [],
