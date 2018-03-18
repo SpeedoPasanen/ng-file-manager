@@ -23,7 +23,7 @@ import { NGFM_CONNECTOR } from './ngfm/connectors/constants';
   providers: [
     PrivateRouteService,
     ConfigResolverService,
-    { provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }
+    // { provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }
   ],
   bootstrap: [AppComponent]
 })

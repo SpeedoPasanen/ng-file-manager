@@ -83,8 +83,15 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
           text: this.config.messages.RENAME,
           action: () => this.rename(this.items[0])
         }
+      ]).concat([
+        {
+          isMulti: false,
+          perms: null,
+          text: this.config.messages.DOWNLOAD,
+          action: () => this.ngfm.download(this.items[0] as NgfmFile)
+        },
       ]).filter(menuItem => {
-        return this.items.length && this.config.perms[menuItem.perms] && (menuItem.isMulti || this.items.length === 1);
+        return this.items.length && ((!menuItem.perms) || this.config.perms[menuItem.perms]) && (menuItem.isMulti || this.items.length === 1);
       });
   }
   // TODO: move all actions to the service

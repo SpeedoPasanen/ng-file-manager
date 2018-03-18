@@ -13,6 +13,8 @@ import { NgfmBrowserDialogComponent } from './browser-dialog/ngfm-browser-dialog
 import { NgfmDialogComponent } from './dialog/ngfm-dialog.component';
 import { NgfmDialogService } from './dialog/ngfm-dialog.service';
 import { NgfmApi } from './connectors/ngfm-api';
+import { NgfmMemoryConnector } from './connectors/ngfm-memory-connector';
+import { NGFM_CONNECTOR } from './connectors/constants';
 
 @NgModule({
   imports: [
@@ -39,7 +41,10 @@ import { NgfmApi } from './connectors/ngfm-api';
     NgfmBrowserItemToolsComponent,
   ],
   entryComponents: [NgfmBrowserDialogComponent, NgfmUploadDialogComponent, NgfmDialogComponent],
-  providers: []
+  providers: [
+    NgfmMemoryConnector,
+    { provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }
+  ]
 })
 export class NgfmModule {
   static forRoot(): ModuleWithProviders {

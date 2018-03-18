@@ -12,12 +12,18 @@ import { Subscriber } from 'rxjs/Subscriber';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { take, tap, last } from 'rxjs/operators';
+import { NgfmMemoryConnector } from './ngfm-memory-connector';
 @Injectable()
 export class NgfmApi {
     constructor(
         private dialog: MatDialog,
-        @Inject(NGFM_CONNECTOR) public connector: NgfmConnector
-    ) { }
+        private memoryConnector: NgfmMemoryConnector,
+        @Inject(NGFM_CONNECTOR) public connector?: NgfmConnector
+    ) {
+        if (!this.connector) {
+            this.connector = this.memoryConnector;
+        }
+    }
     lsSubjectMap: Map<string, BehaviorSubject<NgfmItem[]>> = new Map();
     ls(folder: NgfmFolder, filter: any = {}): BehaviorSubject<NgfmItem[]> {
         console.log('api.ls');
@@ -131,6 +137,8 @@ export class NgfmApi {
     pickFolder(root: string[], path: string[]) {
         return this.openDialog(root, path, { pick: 'folder' });
     }
-
+    download(file: NgfmFile) {
+        window.open(file.url);
+    }
 
 }

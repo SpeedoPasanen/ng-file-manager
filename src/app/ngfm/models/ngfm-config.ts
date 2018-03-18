@@ -13,7 +13,8 @@ export class NgfmConfig {
         CREATE_FOLDER: 'Create Folder',
         SELECTED: 'selected',
         SELECT_ALL: 'Select All',
-        PICK: 'PICK'
+        PICK: 'Pick',
+        DOWNLOAD: 'Download'
     }
     constructor(init?: NgfmConfig) {
         Object.assign(this, init || {});
