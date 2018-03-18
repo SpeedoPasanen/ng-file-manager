@@ -16,6 +16,15 @@
     user-select: none;
 }
 
+.mat-grid-tile-footer {
+    display: flex;
+    flex-direction: row;
+}
+
+.mat-grid-tile-footer>*:last-child {
+    margin-left: auto;
+}
+
 .mat-grid-tile:hover {
     opacity: 0.8;
 }
@@ -32,13 +41,14 @@
 }
 
 .ngfm-folder-tile {
-    background: #a7b1d1;
+    background: #f1f1ed;
 }
 
 .ngfm-browser-menu {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+    align-items: center;
     margin-bottom: 0.5em;
 }
 
@@ -88,4 +98,15 @@
     padding: 2px;
     white-space: nowrap;
     overflow: hidden;
+}
+
+::ng-deep .mat-grid-list .mat-checkbox-frame {
+    border-color: rgba(255, 255, 255, 0.7);
+    border-radius: 0;
+    border-width: 1px;
+}
+
+.hide-tools .mat-grid-tile-header,
+.hide-tools .mat-grid-tile-footer {
+    display: none;
 }

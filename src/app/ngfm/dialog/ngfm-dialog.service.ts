@@ -10,7 +10,7 @@ import { NgfmUploadDialogComponent } from '../upload-dialog/ngfm-upload-dialog.c
 export class NgfmDialogService {
   public okCancel: DialogButtonConfig[] = [
     { text: 'OK', value: true, color: 'primary' },
-    { text: 'Peruuta', value: false, color: 'default' }
+    { text: 'Cancel', value: false, color: 'default' }
   ];
   private refs: MatDialogRef<any>[] = [];
   public noButtons: DialogButtonConfig[] = [];
@@ -22,7 +22,7 @@ export class NgfmDialogService {
     const dialogRef = this.dialog.open(NgfmDialogComponent, {
       data: { title, html, buttons, ...otherData },
       maxWidth: '90vw',
-      maxHeight: '90vh',
+      maxHeight: '90vh'
     });
     this.refs.push(dialogRef);
     return new Promise((resolve, reject) => {
@@ -33,7 +33,7 @@ export class NgfmDialogService {
     });
   }
   public openPrompt(title: string = '', html: string = '', defaultValue: string = ''): Promise<string | false | null> {
-    return this.open(title, html, this.okCancel, { isPrompt: true, defaultValue });
+    return this.open(title, html, this.okCancel, { isPrompt: true, defaultValue, autoFocus: true });
   }
   public openOkCancel(title: string, html: string = '') {
     return this.open(title, html, this.okCancel);

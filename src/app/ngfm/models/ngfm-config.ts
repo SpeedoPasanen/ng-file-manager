@@ -14,7 +14,12 @@ export class NgfmConfig {
         SELECTED: 'selected',
         SELECT_ALL: 'Select All',
         PICK: 'Pick',
-        DOWNLOAD: 'Download'
+        DOWNLOAD: 'Download',
+        FILE_MOVED: 'File(s) moved.',
+        DONE: 'Done.',
+        GO_TO: 'Go to',
+        TOOLS: 'Tools',
+        ARE_YOU_SURE: 'Are you sure?'
     }
     constructor(init?: NgfmConfig) {
         Object.assign(this, init || {});

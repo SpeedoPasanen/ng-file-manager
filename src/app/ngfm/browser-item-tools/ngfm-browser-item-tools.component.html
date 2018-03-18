@@ -1,10 +1,11 @@
 <button mat-button [matMenuTriggerFor]="menu" [disabled]="!items.length">
-  <i class="fa fa-chevron-circle-down">
+  <i class="fa fa-angle-down ngfm-menu-icon">
   </i>
-  <span class="ngfm-browser-item-tools-text">{{text}}</span>
+  <span class="ngfm-browser-item-tools-text" *ngIf="text">{{text}}</span>
 </button>
 <mat-menu #menu="matMenu" xPosition="after">
   <button mat-menu-item *ngFor="let menuItem of menuItems" (click)="menuItem.action()">
+    <span class="fa fa-{{menuItem.icon}} ngfm-menuitem-icon"></span>
     {{menuItem.text}}
   </button>
 </mat-menu>

@@ -1,10 +1,10 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, EventEmitter } from '@angular/core';
 import { NgfmFolder } from '../models/ngfm-folder';
 import { Observable } from 'rxjs/Observable';
 import { NgfmItem } from '../models/ngfm-item';
 import { NgfmFile } from '../models/ngfm-file';
 import { NGFM_CONNECTOR } from './constants';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBarConfig, MatSnackBar } from '@angular/material';
 import { NgfmUploadDialogComponent } from '../upload-dialog/ngfm-upload-dialog.component';
 import { NgfmBrowserDialogComponent } from '../browser-dialog/ngfm-browser-dialog.component';
 import { NgfmConnector } from './ngfm-connector';
@@ -13,11 +13,15 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { take, tap, last } from 'rxjs/operators';
 import { NgfmMemoryConnector } from './ngfm-memory-connector';
+import { NgfmConfig } from '../models/ngfm-config';
 @Injectable()
 export class NgfmApi {
+    config: NgfmConfig;
+    navigate: EventEmitter<NgfmFolder> = new EventEmitter();
     constructor(
         private dialog: MatDialog,
         private memoryConnector: NgfmMemoryConnector,
+        private snackBar: MatSnackBar,
         @Inject(NGFM_CONNECTOR) public connector?: NgfmConnector
     ) {
         if (!this.connector) {
@@ -66,7 +70,17 @@ export class NgfmApi {
     moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): Observable<{ files: NgfmFile[]; from: NgfmFolder; to: NgfmFolder; }> {
         return this.pipeOverlay(
             this.connector.moveFiles(files, from, to)
-                .pipe(tap(() => this.ls(from)))
+                .pipe(
+                    tap(() => {
+                        this.ls(from);
+                        const sbConfig: MatSnackBarConfig = new MatSnackBarConfig();
+                        sbConfig.duration = 5000;
+                        this.snackBar.open(`${this.config.messages.DONE}`, `${this.config.messages.GO_TO} ${to.name}`, sbConfig)
+                            .onAction().subscribe(() => {
+                                this.navigate.next(to);
+                            });
+                    })
+                )
         );
     }
     uploadFile(file: NgfmFile): Observable<number> {
@@ -138,7 +152,11 @@ export class NgfmApi {
         return this.openDialog(root, path, { pick: 'folder' });
     }
     download(file: NgfmFile) {
-        window.open(file.url);
+        // window.open(file.url);
+        const link = document.createElement('a');
+        link.href = file.url;
+        link.setAttribute('download', file.name);
+        link.click();
     }
 
 }

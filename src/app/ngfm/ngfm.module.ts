@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { NgfmRouteComponent } from './route/ngfm-route.component';
 import { NgfmBrowserComponent } from './browser/ngfm-browser.component';
-import { MatDialogModule, MatButtonModule, MatListModule, MatProgressBarModule, MatGridListModule, MatMenuModule, MatCheckboxModule, MatInputModule, MatSnackBarModule } from '@angular/material';
+import { MatDialogModule, MatButtonModule, MatListModule, MatProgressBarModule, MatGridListModule, MatMenuModule, MatCheckboxModule, MatInputModule, MatSnackBarModule, MatSlideToggleModule } from '@angular/material';
 
 import { NgfmUploadDialogComponent } from './upload-dialog/ngfm-upload-dialog.component';
 import { NgfmDialogHeaderComponent } from './dialog-header/ngfm-dialog-header.component';
@@ -28,7 +28,8 @@ import { NGFM_CONNECTOR } from './connectors/constants';
     MatCheckboxModule,
     MatInputModule,
     MatSnackBarModule,
-    FormsModule
+    FormsModule,
+    MatSlideToggleModule
   ],
   exports: [],
   declarations: [

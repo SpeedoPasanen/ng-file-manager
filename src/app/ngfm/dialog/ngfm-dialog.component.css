@@ -17,3 +17,7 @@
     width: 100%;
     object-fit: contain;
 }
+
+.mat-dialog-actions>*:last-child {
+    margin-left: auto;
+}

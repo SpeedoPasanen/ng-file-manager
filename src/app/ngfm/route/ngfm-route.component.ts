@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
@@ -13,6 +13,7 @@ import { NgfmConfig } from '../models/ngfm-config';
   styleUrls: ['./ngfm-route.component.css']
 })
 export class NgfmRouteComponent implements OnInit {
+  @HostBinding('class.ngfm-route-component') private _hostClass = true;
 
   root$: Observable<string[]>;
   path$: Observable<string[]>;

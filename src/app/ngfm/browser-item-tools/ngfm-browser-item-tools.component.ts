@@ -22,6 +22,7 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
   menuItems: any[] = [];
   @HostBinding('class.ngfm-browser-item-tools') private _hostClass = true;
   @Output() selectionChange: EventEmitter<NgfmItem> = new EventEmitter();
+  @Output() movedOrDeleted: EventEmitter<any> = new EventEmitter();
   @HostListener('click', ['$event'])
   clicked(ev) {
     ev.stopPropagation();
@@ -49,46 +50,57 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
     editFolder?= true;
     removeFolder?= true;
      */
+    const icons = {
+      rename: 'pencil',
+      move: 'arrows',
+      delete: 'ban',
+      download: 'download'
+    };
     this.menuItems = (this.isFile ?
       [
         {
-          isMulti: true,
-          perms: 'removeFile',
-          text: this.config.messages.DELETE,
-          action: () => this.ngfm.rmFiles(this.items as NgfmFile[]).subscribe()
+          icon: icons.download,
+          isMulti: false,
+          perms: null,
+          text: this.config.messages.DOWNLOAD,
+          action: () => this.ngfm.download(this.items[0] as NgfmFile)
         },
         {
+          icon: icons.rename,
           isMulti: false,
           perms: 'editFile',
           text: this.config.messages.RENAME,
           action: () => this.rename(this.items[0])
         },
         {
+          icon: icons.move,
           isMulti: true,
           perms: 'editFile',
           text: this.config.messages.MOVE,
           action: () => this.moveFile(this.items as NgfmFile[])
         },
+        {
+          icon: icons.delete,
+          isMulti: true,
+          perms: 'removeFile',
+          text: this.config.messages.DELETE,
+          action: () => this.rmFiles(this.items as NgfmFile[])
+        },
       ] :
       [
         {
-          isMulti: true,
-          perms: 'removeFolder',
-          text: this.config.messages.DELETE,
-          action: () => this.ngfm.rmDirs(this.items as NgfmFolder[]).subscribe()
-        },
-        {
+          icon: icons.move,
           isMulti: false,
           perms: 'editFolder',
           text: this.config.messages.RENAME,
           action: () => this.rename(this.items[0])
-        }
-      ]).concat([
+        },
         {
-          isMulti: false,
-          perms: null,
-          text: this.config.messages.DOWNLOAD,
-          action: () => this.ngfm.download(this.items[0] as NgfmFile)
+          icon: icons.delete,
+          isMulti: true,
+          perms: 'removeFolder',
+          text: this.config.messages.DELETE,
+          action: () => this.rmDirs(this.items as NgfmFolder[])
         },
       ]).filter(menuItem => {
         return this.items.length && ((!menuItem.perms) || this.config.perms[menuItem.perms]) && (menuItem.isMulti || this.items.length === 1);
@@ -101,11 +113,24 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
       this.ngfm.rename(item, newName + (item.isFile ? '.' + (item as NgfmFile).extension : '')).subscribe();
     }
   }
+  rmFiles(files: NgfmFile[]) {
+    this.dialog.openOkCancel(this.config.messages.ARE_YOU_SURE).then(confirmed =>
+      confirmed && this.ngfm.rmFiles(files).subscribe(() => this.movedOrDeleted.next(true))
+    );
+
+  }
+  rmDirs(dirs: NgfmFolder[]) {
+    this.dialog.openOkCancel(this.config.messages.ARE_YOU_SURE).then(confirmed =>
+      confirmed && this.ngfm.rmDirs(this.items as NgfmFolder[]).subscribe()
+    );
+  }
   moveFile(files: NgfmFile[]) {
     const from = files[0].folder;
     this.ngfm.pickFolder(from.root, from.path).subscribe((to: NgfmFolder) => {
       if (to) {
-        this.ngfm.moveFiles(files, from, to).subscribe();
+        this.ngfm.moveFiles(files, from, to).subscribe(() => {
+          this.movedOrDeleted.next(true);
+        });
       }
     });
   }

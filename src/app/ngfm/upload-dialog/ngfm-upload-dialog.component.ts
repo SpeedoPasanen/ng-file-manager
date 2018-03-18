@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy, HostBinding } from '@angular/core';
 import { NgfmFolder } from '../models/ngfm-folder';
 import { NgfmFile } from '../models/ngfm-file';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
@@ -16,6 +16,7 @@ import { NgfmApi } from '../connectors/ngfm-api';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgfmUploadDialogComponent implements OnInit {
+  @HostBinding('class.ngfm-upload-dialog') private _hostClass = true;
   folder: NgfmFolder;
   files: NgfmFile[] = [];
   isOver = false;

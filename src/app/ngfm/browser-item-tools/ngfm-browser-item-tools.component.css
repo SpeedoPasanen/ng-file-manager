@@ -1,6 +1,5 @@
 :host {
     display: flex;
-    width: 100%;
     flex-direction: row;
     cursor: pointer;
 }
@@ -10,12 +9,16 @@
     flex: 1 1 auto;
 }
 
-.fa {
-    font-size: 1.5em;
+.ngfm-menu-icon {
+    font-size: 1.4em;
+}
+
+.ngfm-menuitem-icon {
+    margin-right: 0.25em;
 }
 
 .ngfm-browser-item-tools-text {
-    margin: 0.2em 0 0 0.5em;
+    margin: 0.2em 5px 0 0.5em;
 }
 
 .mat-button {

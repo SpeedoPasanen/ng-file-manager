@@ -12,6 +12,7 @@ import { NgfmItem } from '../models/ngfm-item';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
 import { NgfmApi } from '../connectors/ngfm-api';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'ngfm-browser',
@@ -20,11 +21,11 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
+  @HostBinding('class.ngfm-browser') private _hostClass = true;
   @Input() pick: 'file' | 'folder' | null;
   @Input() root$: Observable<string[]>;
   @Input() path$: Observable<string[]>;
   @Input() config$: Observable<NgfmConfig>;
-  @HostBinding('class.ngfm-browser') private _hostClass = true;
   @Output() navigated: EventEmitter<NgfmFolder> = new EventEmitter();
   @Output() picked: EventEmitter<NgfmItem> = new EventEmitter();
   gridCols$: Observable<number>;
@@ -32,6 +33,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
   children$: BehaviorSubject<NgfmItem[]>;
   selectedFiles: NgfmFile[] = [];
   @ViewChild('widthSource') widthSource: ElementRef
+  private subscriptions: Subscription[];
   constructor(
     private ngfm: NgfmApi,
     private cdRef: ChangeDetectorRef,
@@ -39,18 +41,22 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.subscriptions = [this.ngfm.navigate.subscribe(this.navigate.bind(this))];
     this.rebase();
     this.gridCols$ = !window ? of(8) : fromEvent(window, 'resize').pipe(
       startWith(8),
       switchMap(() => this.getColCount()),
     );
   }
-  ngOnDestroy() { }
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
   getColCount(): Observable<number> {
     const containerWidth = this.widthSource.nativeElement.offsetWidth;
     return this.config$.pipe(
       take(1),
       map(config => {
+        this.ngfm.config = config; // TODO: Ugly ass code, just needed to get config there quick, fix later! xD
         return Math.floor(containerWidth / config.listItemSize);
       }));
   }
@@ -100,7 +106,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     if (item.isFile) {
       const file = (item as NgfmFile);
       if (file.preview) {
-        this.dialog.open(file.name, '', null, { img: file.preview });
+        this.dialog.open(file.name, '', null, { file, config$: this.config$ });
       }
       if (file.isVideo) {
         return this.dialog.open(file.name,

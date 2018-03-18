@@ -4,17 +4,20 @@
 <mat-dialog-content>
     <div [innerHTML]="data.html"></div>
     <div>
-        <mat-form-field *ngIf="data.isPrompt" class="mt-4 w-100">
-            <input matInput [(ngModel)]="promptValue" [placeholder]="data.title" />
-        </mat-form-field>
+        <form (submit)="close(promptValue)" *ngIf="data.isPrompt">
+            <mat-form-field class="mt-4 w-100">
+                <input name="value" matInput [(ngModel)]="promptValue" [placeholder]="data.title" />
+            </mat-form-field>
+        </form>
     </div>
-    <div *ngIf="data.img">
-        <img [src]="data.img" />
+    <div *ngIf="data.file">
+        <img [src]="data.file.preview" />
     </div>
 </mat-dialog-content>
 <div *ngIf="buttons.length">
     <mat-dialog-actions>
-        <span class="fill-space"></span>
+        <ngfm-browser-item-tools [text]="ngfm.config.messages.TOOLS" (movedOrDeleted)="close()" *ngIf="data.file" [items]="[data.file]"
+            [config]="data.config$|async" [isFile]="true"></ngfm-browser-item-tools>
         <button *ngFor="let b of buttons" mat-raised-button color="{{b.color}}" (click)="clicked(b)" [innerHtml]="b.text"></button>
     </mat-dialog-actions>
 </div>

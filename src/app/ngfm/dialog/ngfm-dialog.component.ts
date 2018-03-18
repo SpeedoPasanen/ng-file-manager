@@ -1,5 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, HostBinding } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { NgfmApi } from '../public_api';
 
 @Component({
     selector: 'ngfm-dialog',
@@ -7,11 +8,13 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
     styleUrls: ['./ngfm-dialog.component.css']
 })
 export class NgfmDialogComponent implements OnInit {
+    @HostBinding('class.ngfm-dialog') private _hostClass = true;
     promptValue = '';
     public buttons = [];
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any,
-        private ref: MatDialogRef<NgfmDialogComponent>
+        private ref: MatDialogRef<NgfmDialogComponent>,
+        public ngfm: NgfmApi
     ) {
     }
 
@@ -29,5 +32,8 @@ export class NgfmDialogComponent implements OnInit {
     }
     private trim(s: string) {
         return ('' + s).replace(/^\s+/, '').replace(/\s+$/, '');
+    }
+    close(value: any = null) {
+        this.ref.close(value);
     }
 }
