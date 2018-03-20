@@ -21,12 +21,6 @@ export class NgfmFile extends NgfmItem {
     isValid = true;
 
     /**
-     * UNIX timestamp
-     */
-    lastModified = new Date().getTime();
-    lastModifiedDate = new Date();
-
-    /**
      * MIME type eg. `image/jpeg`
      */
     type = '';
