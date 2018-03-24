@@ -13,6 +13,6 @@ export class AppComponent {
 
   }
   openDialog() {
-    this.ngfm.openDialog([], []);
+    this.ngfm.openDialog(['private', '1337'], []);
   }
 }

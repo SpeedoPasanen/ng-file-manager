@@ -16,6 +16,7 @@ import { of } from 'rxjs/observable/of';
 import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import * as downloadJs from 'downloadjs';
 @Injectable()
 export class NgfmApi {
     config: NgfmConfig;
@@ -80,10 +81,11 @@ export class NgfmApi {
                 )
         );
     }
-    private handleError(err: HttpErrorResponse) {
+    private handleError(err: HttpErrorResponse | any) {
         console.log(err);
         this.showOverlay(false);
-        this.snackBar.open(`Error: ${err.message}`, this.config.messages.CLOSE);
+        const msg = err.status && err.statusText ? `${err.status} ${err.statusText}` : err.message || 'Unknown error';
+        this.snackBar.open(`Error: ${msg}`, this.config.messages.CLOSE);
         return of(null);
     }
     uploadFile(file: NgfmFile): Observable<number> {
@@ -158,11 +160,7 @@ export class NgfmApi {
         return this.openDialog(root, path, { pick: 'folder' });
     }
     download(file: NgfmFile) {
-        // window.open(file.url);
-        const link = document.createElement('a');
-        link.href = file.url;
-        link.setAttribute('download', file.name);
-        link.click();
+        downloadJs(file.url);
     }
 
 }

@@ -18,6 +18,8 @@
       <ngfm-browser-item-tools [items]="selectedFiles" [config]="(config$|async)" [isFile]="true" [text]="selectedFiles.length + ' ' + config?.messages.SELECTED"></ngfm-browser-item-tools>
     </span>
   </div>
+  <ngfm-breadcrumbs [folder]="folder" (navigated)="this.navigate($event)"></ngfm-breadcrumbs>
+  <hr/>
   <div *ngIf="gridCols$|async as gridCols" [class.hide-tools]="hideTools">
     <mat-grid-list [cols]="gridCols" class="ngfm-grid-list">
       <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)" class="ngfm-folder-tile">

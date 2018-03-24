@@ -16,6 +16,7 @@ import { NgfmApi } from './connectors/ngfm-api';
 import { NGFM_CONNECTOR } from './connectors/constants';
 import { NgfmMemoryConnector } from './connectors/memory/ngfm-memory.connector';
 import { HttpClientModule } from '@angular/common/http';
+import { NgfmBreadcrumbsComponent } from './breadcrumbs/ngfm-breadcrumbs.component';
 
 @NgModule({
   imports: [
@@ -42,6 +43,7 @@ import { HttpClientModule } from '@angular/common/http';
     NgfmDialogComponent,
     NgfmDialogHeaderComponent,
     NgfmBrowserItemToolsComponent,
+    NgfmBreadcrumbsComponent,
   ],
   entryComponents: [NgfmBrowserDialogComponent, NgfmUploadDialogComponent, NgfmDialogComponent],
   providers: [

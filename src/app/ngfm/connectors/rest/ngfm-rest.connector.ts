@@ -4,11 +4,12 @@ import { NgfmFolder } from '../../models/ngfm-folder';
 import { Observable } from 'rxjs/Observable';
 import { NgfmItem } from '../../models/ngfm-item';
 import { NgfmFile } from '../../models/ngfm-file';
-import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpParams, HttpHeaders, HttpRequest, HttpEventType } from '@angular/common/http';
 import { NgfmRestConfig } from './ngfm-rest.config';
-import { map, tap, switchMap } from 'rxjs/operators';
+import { map, tap, switchMap, filter } from 'rxjs/operators';
 import { NGFM_REST_CONFIG } from '../constants';
 import { zip } from 'rxjs/observable/zip';
+import { HttpUploadProgressEvent } from '@angular/common/http/src/response';
 @Injectable()
 export class NgfmRestConnector implements NgfmConnector {
     private base: string[];
@@ -20,15 +21,18 @@ export class NgfmRestConnector implements NgfmConnector {
     }
 
     ls(folder: NgfmFolder, filter?: any): Observable<NgfmItem[]> {
-        return this.http.get<NgfmItem[]>(NgfmFolder.joinPath(this.base, folder.fullPath)).pipe(
+        const url = NgfmFolder.joinPath(this.base, folder.fullPath, ['']);
+        console.log(url);
+        return this.http.get<NgfmItem[]>(url).pipe(
             map(data => data.map(obj => this.createItem(folder, obj))),
+            map(data => data.sort((a, b) => a.isFolder === b.isFolder ? (a.created > b.created ? -1 : 1) : a.isFolder ? -1 : 1))
         );
     }
     private getFullPath(item: NgfmItem) {
         return [...this.base, ...item.fullPath].join('/');
     }
     private createItem(parent: NgfmFolder, data: any) {
-        return data.itemType === 'file' ? new NgfmFile(parent, data) : new NgfmFolder(parent.fullPath, [data.name]);
+        return data.itemType === 'file' ? new NgfmFile(parent, data) : new NgfmFolder(parent.root, [...parent.path, data.name]);
     }
     mkDir(folder: NgfmFolder): Observable<NgfmFolder> {
         return this.http.post<any>(NgfmFolder.joinPath(this.base, folder.fullPath), {}).pipe(
@@ -63,7 +67,16 @@ export class NgfmRestConnector implements NgfmConnector {
         );
     }
     uploadFile(file: NgfmFile): Observable<number> {
-        throw new Error("Method not implemented.");
+        const data: FormData = new FormData();
+        data.append('file', file.nativeFile);
+        const headers = new HttpHeaders();
+        headers.set('Content-Length', String(file.nativeFile.size));
+        const req = new HttpRequest('POST', [...this.base, ...file.fullPath].join('/'), data, { responseType: 'json', reportProgress: true });
+        return this.http.request(req).pipe(
+            filter(evt => evt.type === HttpEventType.UploadProgress),
+            map((evt: HttpUploadProgressEvent) =>
+                evt.loaded / evt.total
+            ));
     }
     folderExists(folder: NgfmFolder): Observable<boolean> {
         throw new Error("Method not implemented.");

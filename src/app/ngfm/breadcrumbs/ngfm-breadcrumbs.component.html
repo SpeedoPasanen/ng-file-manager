@@ -1,0 +1,13 @@
+<div class="mb-1">
+  <span *ngFor="let crumb of crumbs">
+    <button mat-button (click)="navigate(crumb)">
+      <span *ngIf="crumb.path.length">{{crumb.name}}</span>
+      <i *ngIf="!crumb.path.length" class="fa fa-home"></i>
+    </button>
+    &raquo;
+  </span>
+  <button mat-button [disabled]="true">
+    <span *ngIf="folder.path.length">{{folder.name}}</span>
+    <i *ngIf="!folder.path.length" class="fa fa-home"></i>
+  </button>
+</div>
