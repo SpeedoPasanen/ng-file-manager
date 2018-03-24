@@ -13,8 +13,9 @@ import { NgfmBrowserDialogComponent } from './browser-dialog/ngfm-browser-dialog
 import { NgfmDialogComponent } from './dialog/ngfm-dialog.component';
 import { NgfmDialogService } from './dialog/ngfm-dialog.service';
 import { NgfmApi } from './connectors/ngfm-api';
-import { NgfmMemoryConnector } from './connectors/ngfm-memory-connector';
 import { NGFM_CONNECTOR } from './connectors/constants';
+import { NgfmMemoryConnector } from './connectors/memory/ngfm-memory.connector';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { NGFM_CONNECTOR } from './connectors/constants';
     MatInputModule,
     MatSnackBarModule,
     FormsModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    HttpClientModule
   ],
   exports: [],
   declarations: [

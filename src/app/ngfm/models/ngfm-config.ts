@@ -19,7 +19,8 @@ export class NgfmConfig {
         DONE: 'Done.',
         GO_TO: 'Go to',
         TOOLS: 'Tools',
-        ARE_YOU_SURE: 'Are you sure?'
+        ARE_YOU_SURE: 'Are you sure?',
+        CLOSE: 'Close'
     }
     constructor(init?: NgfmConfig) {
         Object.assign(this, init || {});

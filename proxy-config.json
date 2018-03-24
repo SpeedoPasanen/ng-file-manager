@@ -1,0 +1,6 @@
+{
+    "/files": {
+        "target": "http://localhost:3000/files",
+        "secure": false
+    }
+}

@@ -10,6 +10,7 @@ export class NgfmItem {
     lastModifiedDate: Date;
     created = new Date().getTime();
     createdDate: Date;
+    fullPath: string[];
 
     selected = false;
     hash: string; // Unique identifier made from all properties

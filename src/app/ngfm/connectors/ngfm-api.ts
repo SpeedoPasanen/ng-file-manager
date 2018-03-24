@@ -11,26 +11,23 @@ import { NgfmConnector } from './ngfm-connector';
 import { Subscriber } from 'rxjs/Subscriber';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import { take, tap, last } from 'rxjs/operators';
-import { NgfmMemoryConnector } from './ngfm-memory-connector';
+import { take, tap, last, catchError } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
 import { NgfmConfig } from '../models/ngfm-config';
+import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
+import { HttpErrorResponse } from '@angular/common/http';
 @Injectable()
 export class NgfmApi {
     config: NgfmConfig;
     navigate: EventEmitter<NgfmFolder> = new EventEmitter();
     constructor(
         private dialog: MatDialog,
-        private memoryConnector: NgfmMemoryConnector,
         private snackBar: MatSnackBar,
         @Inject(NGFM_CONNECTOR) public connector?: NgfmConnector
     ) {
-        if (!this.connector) {
-            this.connector = this.memoryConnector;
-        }
     }
     lsSubjectMap: Map<string, BehaviorSubject<NgfmItem[]>> = new Map();
     ls(folder: NgfmFolder, filter: any = {}): BehaviorSubject<NgfmItem[]> {
-        console.log('api.ls');
         if (!this.lsSubjectMap.has(folder.hash)) {
             this.lsSubjectMap.set(folder.hash, new BehaviorSubject([]));
         }
@@ -83,14 +80,20 @@ export class NgfmApi {
                 )
         );
     }
+    private handleError(err: HttpErrorResponse) {
+        console.log(err);
+        this.showOverlay(false);
+        this.snackBar.open(`Error: ${err.message}`, this.config.messages.CLOSE);
+        return of(null);
+    }
     uploadFile(file: NgfmFile): Observable<number> {
-        return this.connector.uploadFile(file);
+        return this.pipeOverlay(this.connector.uploadFile(file));
     }
     folderExists(folder: NgfmFolder): Observable<boolean> {
-        return this.connector.folderExists(folder);
+        return this.pipeOverlay(this.connector.folderExists(folder));
     }
     fileExists(file: NgfmFile): Observable<boolean> {
-        return this.connector.fileExists(file);
+        return this.pipeOverlay(this.connector.fileExists(file));
     }
     rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
         return this.pipeOverlay(
@@ -105,7 +108,10 @@ export class NgfmApi {
 
     pipeOverlay(observable: Observable<any>): Observable<any> {
         this.showOverlay(true);
-        return observable.pipe(tap(() => this.showOverlay(false)));
+        return observable.pipe(
+            tap(() => this.showOverlay(false)),
+            catchError(this.handleError.bind(this))
+        );
     }
     protected overlay = null;
     protected showOverlay(b = true) {

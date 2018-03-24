@@ -4,7 +4,6 @@ export class NgfmFolder extends NgfmItem {
     readonly itemType = 'folder';
     root: string[];
     path: string[];
-    fullPath: string[];
     constructor(root: string[], path: string[]) {
         super({ root, path });
         Object.assign(this, { root, path, fullPath: [...root, ...path] });
@@ -18,5 +17,8 @@ export class NgfmFolder extends NgfmItem {
             return null;
         }
         return new NgfmFolder(this.root, this.path.slice(0, -1));
+    }
+    static joinPath(...parts: string[][]) {
+        return [...parts.reduce((a, c) => [...a, ...c], [])].join('/');
     }
 }

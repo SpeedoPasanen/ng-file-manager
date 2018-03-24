@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, HostBinding } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { NgfmApi } from '../public_api';
+import { NgfmApi } from '../connectors/ngfm-api';
 
 @Component({
     selector: 'ngfm-dialog',

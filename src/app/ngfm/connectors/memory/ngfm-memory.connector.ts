@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { NgfmFolder } from '../models/ngfm-folder';
-import { NgfmFile } from '../models/ngfm-file';
-import { NgfmConnector } from './ngfm-connector';
 import { Observable } from 'rxjs/Observable';
 import { timer } from 'rxjs/observable/timer';
 import { of } from 'rxjs/observable/of';
 import { map, switchMap, takeWhile, tap, last } from 'rxjs/operators';
 import * as _ from 'lodash';
-import { NgfmItem } from '../models/ngfm-item';
+import { NgfmConnector } from '../ngfm-connector';
+import { NgfmFile } from '../../models/ngfm-file';
+import { NgfmFolder } from '../../models/ngfm-folder';
+import { NgfmItem } from '../../models/ngfm-item';
 
 @Injectable()
 export class NgfmMemoryConnector implements NgfmConnector {
@@ -40,9 +40,9 @@ export class NgfmMemoryConnector implements NgfmConnector {
     return files;
   }
   moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): Observable<{ files: NgfmFile[], from: NgfmFolder, to: NgfmFolder }> {
-    const fromNodee = this.getNode(from);
+    const fromNode = this.getNode(from);
     const toNode = this.getNode(to);
-    fromNodee.files = fromNodee.files.filter(nodeFile => !files.find(file => nodeFile.hash === file.hash));
+    fromNode.files = fromNode.files.filter(nodeFile => !files.find(file => nodeFile.hash === file.hash));
     toNode.files = [...toNode.files, ...files];
     return timer(700).pipe(map(() => { return { files, from, to }; }));
   }

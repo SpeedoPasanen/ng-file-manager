@@ -65,6 +65,7 @@ export class NgfmFile extends NgfmItem {
         super(init);
         this.folder = folder;
         ['download', 'thumbnail', 'preview', ...Object.keys(this)].forEach(key => this[key] = key in init ? init[key] : this[key]);
+        this.fullPath = [...folder.fullPath, this.name];
         this.extension = this.name.replace(/[^\.]*./, '').toLowerCase();
         this.nativeFile = init instanceof File ? init : null;
         this.humanSize = this.getHumanSize();
@@ -139,4 +140,7 @@ export class NgfmFile extends NgfmItem {
      * Helper for checking MIME type
      */
     get isAudio() { return /audio/.test(this.type); }
+    /**
+     * Helper for getting full path including folder
+     */
 }
