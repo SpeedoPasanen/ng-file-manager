@@ -4,15 +4,17 @@
     - Router Support
     - Angular Material design UI/UX
     - Easy file picker dialog (pluggable to TinyMCE etc...)
-    - Extendable API connectors
-    - In-memory connector for testing & getting started quickly
+    - Swappable API connectors
+        - In-memory connector for testing & getting started quickly
+        - REST connector for the out-of-the-box Express app/middleware: [ng-file-manager-express](https://github.com/funkizer/ng-file-manager-express)
+        - Write your own? Toss me a message at [Gitter](https://gitter.im/ng-file-manager/Lobby) if you need help!
     - Multiple root directories (eg. private/personal, public, etc.)
     - Localization
-    - Customizability as far as Material Theming goes. Off course you can override styles if you want.
+    - Customizability powered by Angular Material Theming
     - More ...
-- Some time in further future:
-    - ExpressJS middleware / router for the backend
-    - More ...
+- On the ToDo-list:
+    - More connectors - popular cloud storages etc.
+    - Better documentation, tutorials, examples
 
 ##  WIP
 Not all functionalities have been implemented yet and there likely will be breaking changes. Try at your own risk - not ready for production.
@@ -26,6 +28,21 @@ Demo: https://funkizer.github.io
 1. If you don't have an Angular project, create one by running `ng new my-project`.
 2. Say `npm install ng-file-manager --save` in your project's root folder.
 3. Follow the guide at https://material.angular.io for installing Angular Material and a theme. TODO: I may come back to this later and say it's not necessary unless you want to add a custom theme, needs further investigation.
-4. Provide an `NgfmConnector` in your AppModule, eg: `providers: [{ provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }, ...]`
+4. Provide an `NgfmConnector` in your AppModule. If you use the built-in REST connector, provide also the configuration for it. While developing and using `ng serve`, provide a full absolute URL (using environment would be more ideal than this example): 
+```
+import NgfmRestConnector from 'ngfm-file-browser';
+// @NgModule
+providers: [
+    {
+      provide: NGFM_REST_CONFIG, useValue: new NgfmRestConfig({
+        baseUrl: 'http://localhost:3000/files'
+      })
+    },
+    { provide: NGFM_CONNECTOR, useClass: NgfmRestConnector },
+  ]
+```
 
-Documentation will be improved later. In the meantime, feel free to give me a shout at [Gitter](https://gitter.im/ng-file-manager/Lobby)!
+## Support & Questions
+Feel free to give me a shout at [Gitter](https://gitter.im/ng-file-manager/Lobby)!
+
+Twitter: [@funkizer](https://twitter.com/funkizer)
