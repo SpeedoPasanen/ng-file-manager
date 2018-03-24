@@ -17,7 +17,7 @@
     - Better documentation, tutorials, examples
 
 ##  WIP
-Not all functionalities have been implemented yet and there likely will be breaking changes. Try at your own risk - not ready for production.
+Things may change a bit on the NgfmConnector side if you want to make your own connectors, but other than that you could probably already pop this into an app.
 
 Demo: https://funkizer.github.io
 

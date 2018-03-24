@@ -19,16 +19,12 @@ export class NgfmMemoryConnector implements NgfmConnector {
   };
   private getDemoFiles(amount: number, root: string[], path: string[] = []) {
     const files = [];
-    const urls = [
-      'https://photos-2.dropbox.com/t/2/AACGkpOf7d611n6FvDoQfL74MZNPoOWnKvxnZfsEL21t4g/12/70590446/jpeg/32x32/3/1521406800/0/2/IMG_9065.JPG/EPGE9DYYh9cCIAIoAg/FWkF2oTzDEB4YGaV9Icg84Yx9VLN7tPkJz34jN43mlE%2CCBrCsE9iiV7uVoHyB9pcfBT1NlKqRT0-_zxA7Q5XaSw%2C-BuF5-5a_P41iBWu_fFRZ2pJxI4hukCN_yTeH9qDUvA%2C-_yABV0wOCQE9Sa_h-3MwG8ARWFgVgeONlxtHrghTPA?dl=0&size=1600x1200&size_mode=3',
-      'https://photos-1.dropbox.com/t/2/AAAzWfKeporNm93TZB-ROj1B5udQ4zyyUKBU4y_DDCQv-A/12/70590446/jpeg/32x32/3/1521406800/0/2/IMG_8901.JPG/EPGE9DYYh9cCIAIoAg/a2oUjlP9akrHnA7_7JAo6A8A1McRyo3UFYGrfJDAnC4%2Cown3Qj1Dr3sYERnLfHqyQgdIkthCvL_sLmyIgifl7z0%2CpK4CoIpWUcYZMljWItHBi8L0dxsz9G1YZEQBhrKbNs8%2C00zSRwoFFAkRqMBwSsQTEp32a6H3EwHTlR0VOBG17xw?dl=0&size=1600x1200&size_mode=3',
-      'https://photos-4.dropbox.com/t/2/AACEDWf0DIXU5YeUHTXjJbpqJv6Aq9CUG5oTaiCfib0_-Q/12/70590446/jpeg/32x32/3/1521406800/0/2/IMG_8936.JPG/EPGE9DYYh9cCIAIoAg/tjY3YHj2X4YK0XeE6DSI-7uleFlRmbMlDvp85-oMWcs%2CkhWvAzn5yuHc1MOnOGBTWUSBmCauxm5wSdmXJOVSv2o%2CuBJXY9uhR2Dbv6kz2jNJRmEHQqT-gqGwrr0vfQihPqs%2CBfKIqqE4nX-RouRApPXGdiWEIHKQ1N1Vtu17NPnBcp8?dl=0&size=1600x1200&size_mode=3'
-    ]
+
     while (amount > files.length) {
       const w = Math.round(Math.random() * 800 + 200);
       const h = Math.round(Math.random() * 800 + 200);
       const fakePdf = Math.random() > 0.5;
-      const url = Math.random() > 0.1 ? urls[Math.floor(Math.random() * urls.length)] : `https://placehold.it/${w}x${h}`;
+      const url = `https://placehold.it/${w}x${h}`;
       files.push(new NgfmFile(new NgfmFolder(root, path), {
         name: fakePdf ? 'Fake PDF with a preview.pdf' : `${w}x${h} demo file.jpg`,
         url,
