@@ -16,7 +16,8 @@ import { of } from 'rxjs/observable/of';
 import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import * as downloadJs from 'downloadjs';
+import * as dlJs from 'downloadjs';
+const downloadJs = dlJs;
 @Injectable()
 export class NgfmApi {
     config: NgfmConfig;

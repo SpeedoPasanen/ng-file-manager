@@ -18,7 +18,4 @@ export class NgfmFolder extends NgfmItem {
         }
         return new NgfmFolder(this.root, this.path.slice(0, -1));
     }
-    static joinPath(...parts: string[][]) {
-        return [...parts.reduce((a, c) => [...a, ...c], [])].join('/');
-    }
 }

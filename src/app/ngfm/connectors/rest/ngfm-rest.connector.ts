@@ -21,8 +21,7 @@ export class NgfmRestConnector implements NgfmConnector {
     }
 
     ls(folder: NgfmFolder, filter?: any): Observable<NgfmItem[]> {
-        const url = NgfmFolder.joinPath(this.base, folder.fullPath, ['']);
-        console.log(url);
+        const url = [...this.base, ...folder.fullPath, ''].join('/');
         return this.http.get<NgfmItem[]>(url).pipe(
             map(data => data.map(obj => this.createItem(folder, obj))),
             map(data => data.sort((a, b) => a.isFolder === b.isFolder ? (a.created > b.created ? -1 : 1) : a.isFolder ? -1 : 1))
@@ -35,12 +34,12 @@ export class NgfmRestConnector implements NgfmConnector {
         return data.itemType === 'file' ? new NgfmFile(parent, data) : new NgfmFolder(parent.root, [...parent.path, data.name]);
     }
     mkDir(folder: NgfmFolder): Observable<NgfmFolder> {
-        return this.http.post<any>(NgfmFolder.joinPath(this.base, folder.fullPath), {}).pipe(
+        return this.http.post<any>([...this.base, ...folder.fullPath].join('/'), {}).pipe(
             map(() => folder)
         );
     }
     rmDir(folder: NgfmFolder): Observable<NgfmFolder> {
-        return this.http.delete<any>(NgfmFolder.joinPath(this.base, folder.fullPath), {}).pipe(
+        return this.http.delete<any>([...this.base, ...folder.fullPath].join('/'), {}).pipe(
             map(() => folder)
         );
     }
