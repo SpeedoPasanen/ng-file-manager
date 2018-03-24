@@ -28,8 +28,10 @@ Demo: https://funkizer.github.io
 1. If you don't have an Angular project, create one by running `ng new my-project`.
 2. Say `npm install ng-file-manager --save` in your project's root folder.
 3. Follow the guide at https://material.angular.io for installing Angular Material and a theme. TODO: I may come back to this later and say it's not necessary unless you want to add a custom theme, needs further investigation.
-4. Provide an `NgfmConnector` in your AppModule. If you use the built-in REST connector, provide also the configuration for it. While developing and using `ng serve`, provide a full absolute URL (using environment would be more ideal than this example): 
+4. Provide an `NgfmConnector` in your AppModule. If you use the built-in REST connector, provide also the configuration for it. While developing and using `ng serve`, provide a full absolute URL (using environment would be more ideal than this example).
+5. If you do not provide a connector, `NgfmMemoryConnector` will be used and everything will just work, in memory.
 ```
+// Your AppModule
 import NgfmRestConnector from 'ngfm-file-browser';
 // @NgModule
 providers: [
