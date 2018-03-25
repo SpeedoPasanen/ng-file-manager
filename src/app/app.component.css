@@ -1,7 +1,22 @@
-a {
-    text-decoration: none;
-}
-
 .underline {
     text-decoration: underline;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+* {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+textarea {
+    width: 100%;
+}
+
+.code {
+    background: #eaeaea;
+    border: 1px solid #b0b0b0;
+    padding: 10px;
+    margin-bottom: 0.5em;
 }

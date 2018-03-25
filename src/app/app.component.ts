@@ -7,12 +7,20 @@ import { NgfmApi } from './ngfm/connectors/ngfm-api';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  pickResult: any;
+  dialogCall: string = null;
   constructor(
     private ngfm: NgfmApi
   ) {
 
   }
-  openDialog() {
-    this.ngfm.openDialog(['private', '1337'], []);
+  openDialog(pick: 'file' | 'folder' | null) {
+    this.pickResult = null;
+    this.ngfm.openDialog(['private', '1337'], [], { pick }).subscribe(picked => this.pickResult = picked);
+    this.dialogCall = `this.ngfm.openDialog(
+      ['private', '1337'],
+      [],
+      { pick: ${pick ? "'" + pick + "'" : 'null'} }
+    ).subscribe(picked => this.pickResult = picked);`;
   }
 }

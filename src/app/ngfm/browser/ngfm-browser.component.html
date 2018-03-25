@@ -30,7 +30,10 @@
           <i class="fa fa-folder fa-2x"></i>
           <i class="fa back-icon fa-caret-left"></i>
         </div>
-        <mat-grid-tile-footer></mat-grid-tile-footer>
+        <mat-grid-tile-footer *ngIf="pick && pick === 'folder'">
+          <button mat-button (click)="choose(folder.parent, $event)">{{(config$|async)?.messages.PICK}}</button>
+        </mat-grid-tile-footer>
+        <mat-grid-tile-footer *ngIf="!(pick && pick === 'folder')"></mat-grid-tile-footer>
       </mat-grid-tile>
 
       <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children$|async trackBy: trackByHash" [class.ngfm-folder-tile]="item.isFolder"
@@ -43,7 +46,7 @@
         </div>
         <i *ngIf="item.isFile && item.isAudio" class="fa fa-volume-up"></i>
         <i *ngIf="item.isFile && item.isVideo" class="fa fa-video"></i>
-        <div class="ngfm-file-extension" *ngIf="item.isFile && !(item.isAudio||item.isVideo||item.isImage) && !hideTools">
+        <div class="ngfm-file-extension" *ngIf="item.isFile && !(item.isAudio||item.isVideo||item.isImage)">
           <p>{{item.extension}}</p>
         </div>
         <mat-grid-tile-footer *ngIf="pick && pick === item.itemType">

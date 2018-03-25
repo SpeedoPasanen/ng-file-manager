@@ -17,6 +17,7 @@ import { NGFM_CONNECTOR } from './connectors/constants';
 import { NgfmMemoryConnector } from './connectors/memory/ngfm-memory.connector';
 import { HttpClientModule } from '@angular/common/http';
 import { NgfmBreadcrumbsComponent } from './breadcrumbs/ngfm-breadcrumbs.component';
+import { NgfmDownloadComponent } from './download/ngfm-download.component';
 
 @NgModule({
   imports: [
@@ -44,10 +45,10 @@ import { NgfmBreadcrumbsComponent } from './breadcrumbs/ngfm-breadcrumbs.compone
     NgfmDialogHeaderComponent,
     NgfmBrowserItemToolsComponent,
     NgfmBreadcrumbsComponent,
+    NgfmDownloadComponent,
   ],
-  entryComponents: [NgfmBrowserDialogComponent, NgfmUploadDialogComponent, NgfmDialogComponent],
+  entryComponents: [NgfmBrowserDialogComponent, NgfmUploadDialogComponent, NgfmDialogComponent, NgfmDownloadComponent],
   providers: [
-    NgfmMemoryConnector,
     { provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }
   ]
 })

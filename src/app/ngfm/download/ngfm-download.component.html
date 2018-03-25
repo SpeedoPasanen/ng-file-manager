@@ -1,0 +1,5 @@
+<mat-dialog-content>
+  <h2 mat-dialog-title>{{data.file.name}}</h2>
+  <h4 mat-dialog-title>{{data.config.messages.DOWNLOADING}} {{data.file.humanSize.value|number:'1.0-2'}} {{data.file.humanSize.unit}}</h4>
+  <mat-progress-bar [value]="progress$|async"></mat-progress-bar>
+</mat-dialog-content>

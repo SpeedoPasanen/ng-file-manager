@@ -42,12 +42,12 @@ export class NgfmMemoryConnector implements NgfmConnector {
     toNode.files = [...toNode.files, ...files];
     return timer(700).pipe(map(() => { return { files, from, to }; }));
   }
-  rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
+  rename(item: NgfmItem, newName: string): Observable<void> {
     if (item.isFile) {
       const file = item as NgfmFile;
       const node = this.getNode(file.folder);
       (node.files.find(f => f.hash === file.hash) || {}).name = file.name = newName;
-      return timer(800).pipe(map(() => item));
+      return timer(800).pipe(map(() => null));
     }
     const folder = item as NgfmFolder;
     const newFolder = new NgfmFolder(folder.root, [...folder.parent.path, newName]);
@@ -55,7 +55,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
     const newNode = this.getNode(newFolder);
     newNode.files = node.files;
     delete this.tree[folder.toString()];
-    return timer(800).pipe(map(() => item));
+    return timer(800).pipe(map(() => null));
   }
   private getNode(folder) {
     return this.tree[folder.toString()] = this.tree[folder.toString()] || { files: [] };
@@ -78,7 +78,6 @@ export class NgfmMemoryConnector implements NgfmConnector {
     );
   }
   ls(folder: NgfmFolder, filter: any = {}): Observable<NgfmItem[]> {
-    console.log('connector.ls');
     return timer(400)
       .pipe(
         map(foo => [

@@ -11,6 +11,7 @@ import { ConfigResolverService } from './services/config-resolver.service';
 import { NGFM_CONNECTOR, NGFM_REST_CONFIG } from './ngfm/connectors/constants';
 import { NgfmRestConnector } from './ngfm/connectors/rest/ngfm-rest.connector';
 import { NgfmRestConfig } from './ngfm/connectors/rest/ngfm-rest.config';
+import { MatButtonModule } from '@angular/material';
 @NgModule({
   declarations: [
     AppComponent
@@ -20,6 +21,7 @@ import { NgfmRestConfig } from './ngfm/connectors/rest/ngfm-rest.config';
     AppRoutingModule,
     NgfmModule.forRoot(),
     BrowserAnimationsModule,
+    MatButtonModule
   ],
   providers: [
     PrivateRouteService,

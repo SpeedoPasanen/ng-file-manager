@@ -77,13 +77,20 @@ export class NgfmRestConnector implements NgfmConnector {
                 evt.loaded / evt.total
             ));
     }
-    folderExists(folder: NgfmFolder): Observable<boolean> {
-        throw new Error("Method not implemented.");
-    }
-    fileExists(file: NgfmFile): Observable<boolean> {
-        throw new Error("Method not implemented.");
-    }
-    rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
-        throw new Error("Method not implemented.");
+
+    rename(item: NgfmItem, newName: string): Observable<void> {
+        return this.http.head(this.getFullPath(item), { observe: 'response', responseType: 'json' }).pipe(
+            switchMap((res: HttpResponse<null>) => {
+                // TODO: use x-ngfm-hash header instead of content-type as soon as
+                // HttpResponse not showing any custom headers gets fixed.
+                const hash = res.headers.get('content-type').split(/\/|\;/)[1];
+                const params = new HttpParams().append('from', hash);
+                const newPath = item.fullPath;
+                newPath.pop();
+                newPath.push(newName);
+                return this.http.post([...this.base, ...newPath].join('/'), {}, { params: params })
+            }),
+            map(() => null)
+        );
     }
 }

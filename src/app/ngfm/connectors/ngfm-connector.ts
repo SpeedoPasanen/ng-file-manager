@@ -16,7 +16,5 @@ export abstract class NgfmConnector {
    * @Returns Observable of progress between 0-1. Completes when done.
    */
   abstract uploadFile(file: NgfmFile): Observable<number>
-  abstract folderExists(folder: NgfmFolder): Observable<boolean>
-  abstract fileExists(file: NgfmFile): Observable<boolean>
-  abstract rename(item: NgfmItem, newName: string): Observable<NgfmItem>
+  abstract rename(item: NgfmItem, newName: string): Observable<void>
 }

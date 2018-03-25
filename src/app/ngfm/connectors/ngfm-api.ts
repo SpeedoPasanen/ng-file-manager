@@ -15,9 +15,8 @@ import { take, tap, last, catchError } from 'rxjs/operators';
 import { of } from 'rxjs/observable/of';
 import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import * as dlJs from 'downloadjs';
-const downloadJs = dlJs;
+import { HttpErrorResponse, HttpClient } from '@angular/common/http';
+import { NgfmDownloadComponent } from '../download/ngfm-download.component';
 @Injectable()
 export class NgfmApi {
     config: NgfmConfig;
@@ -86,21 +85,15 @@ export class NgfmApi {
         console.log(err);
         this.showOverlay(false);
         const msg = err.status && err.statusText ? `${err.status} ${err.statusText}` : err.message || 'Unknown error';
-        this.snackBar.open(`Error: ${msg}`, this.config.messages.CLOSE);
+        this.snackBar.open(`Error: ${msg} ${err.error || ''}`, this.config.messages.CLOSE);
         return of(null);
     }
     uploadFile(file: NgfmFile): Observable<number> {
         return this.pipeOverlay(this.connector.uploadFile(file));
     }
-    folderExists(folder: NgfmFolder): Observable<boolean> {
-        return this.pipeOverlay(this.connector.folderExists(folder));
-    }
-    fileExists(file: NgfmFile): Observable<boolean> {
-        return this.pipeOverlay(this.connector.fileExists(file));
-    }
     rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
         return this.pipeOverlay(
-            this.connector.rename(item, newName).pipe(tap(item => this.ls(item.isFolder ? (item as NgfmFolder).parent : (item as NgfmFile).folder)))
+            this.connector.rename(item, newName).pipe(tap(() => this.ls(item.isFolder ? (item as NgfmFolder).parent : (item as NgfmFile).folder)))
         );
     }
     mkSubDir(folder: NgfmFolder, dirName: string): Observable<NgfmFolder> {
@@ -161,7 +154,7 @@ export class NgfmApi {
         return this.openDialog(root, path, { pick: 'folder' });
     }
     download(file: NgfmFile) {
-        downloadJs(file.url);
+        this.dialog.open(NgfmDownloadComponent, { data: { file, config: this.config } });
     }
 
 }

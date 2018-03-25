@@ -4,8 +4,23 @@
   <a href="https://github.com/funkizer/ng-file-manager">github.com/funkizer/ng-file-manager</a> for more information.
 </p>
 <p>
-  <button mat-button mat-raised-button (click)="openDialog()">Open Dialog</button>
-  <a [routerLink]="['/files', 'private']" routerLinkActive="underline">Your Files</a> |
-  <a [routerLink]="['/files', 'public']" routerLinkActive="underline">Public Files</a>
+  <button mat-button mat-raised-button [routerLink]="['/files', 'private']" routerLinkActive="bold">Router: Your Files</button>
+  <button mat-button mat-raised-button [routerLink]="['/files', 'public']" routerLinkActive="bold">Router: Public Files</button>
+  <button mat-button mat-raised-button (click)="openDialog('file')">Open File Picker</button>
+  <button mat-button mat-raised-button (click)="openDialog('folder')">Open Folder Picker</button>
+  <button mat-button mat-raised-button (click)="openDialog(null)">Open Dialog</button>
 </p>
+<div *ngIf="pickResult">
+  <h2>
+    Pick Result
+    <button mat-button mat-raised-button (click)="pickResult=null">
+      Close
+    </button>
+  </h2>
+  <p>NgfmApi method call to open dialog:</p>
+  <pre class="code">{{dialogCall}}</pre>
+  <textarea rows="15">const {{pickResult.itemType==='folder' ? 'folder' : 'file'}}:{{pickResult.itemType==='folder' ? 'NgfmFolder' : 'NgfmFile'}} = {{pickResult|json}};
+  </textarea>
+</div>
+<hr/>
 <router-outlet></router-outlet>

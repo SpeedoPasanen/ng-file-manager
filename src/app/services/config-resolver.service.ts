@@ -14,7 +14,6 @@ export class ConfigResolverService {
    * @param state 
    */
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    console.log(route.data);
     return route.data.config || new NgfmConfig({ perms: NgfmPerms.NONE });
   }
 }

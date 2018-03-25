@@ -50,15 +50,19 @@ export class NgfmFile extends NgfmItem {
     set download(s: string) { this._download = s; }
 
     /**
-     * Optional thumbnail URL. Returns `this.url` when not set.
+     * Optional thumbnail URL. Returns `this.url` when not set and mime type is image/*.
      */
-    get thumbnail(): string { return this._thumbnail || this.url; }
+    get thumbnail(): string {
+        return (this._thumbnail || (this.isImage && this.url)) || null;
+    }
     set thumbnail(s: string) { this._thumbnail = s; }
 
     /**
      * Optional preview URL. Returns `this.url` when not set and mime type is image/*.
      */
-    get preview(): string { return this._preview || (this.isImage ? this.url : null); }
+    get preview(): string {
+        return (this._preview || (this.isImage ? this.url : null)) || null;
+    }
     set preview(s: string) { this._preview = s; }
 
     constructor(folder: NgfmFolder, init: File | any) {
@@ -80,7 +84,7 @@ export class NgfmFile extends NgfmItem {
      * Size normalized to an appropriate unit, eg. 1 MB instead of 1048576 B
      * eg. { value: 1, unit: 'MB'}
      */
-    protected getHumanSize(): { value: number, unit: string } {
+    protected getHumanSize(): { value: number, unit: string, toString: Function } {
         const units = ['B', 'KB', 'MB', 'GB', 'TB'];
         let value = this.size;
         let unit = units.splice(0, 1).pop();
@@ -88,7 +92,7 @@ export class NgfmFile extends NgfmItem {
             unit = units.splice(0, 1).pop();
             value /= 1024;
         }
-        return { value, unit };
+        return { value, unit, toString: () => `${value} ${unit}` };
     }
 
     private read(subscriber: Subscriber<any>): FileReader {

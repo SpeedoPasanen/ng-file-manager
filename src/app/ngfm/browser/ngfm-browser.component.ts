@@ -75,7 +75,6 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
       this.folder$.pipe(take(1)).subscribe(folder => this.refresh(folder));
       return;
     }
-    console.log('browser.refresh');
     // const filter = this.pick ? { itemType: this.pick } : {}; // @Meditation: I donno if this is even a good idea. Better let user see what files are in there?
     this.children$ = this.ngfm.ls(folder).pipe(
       tap(items => {
@@ -106,7 +105,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     if (item.isFile) {
       const file = (item as NgfmFile);
       if (file.preview) {
-        this.dialog.open(file.name, '', null, { file, config$: this.config$ });
+        return this.dialog.open(file.name, '', null, { file, config$: this.config$ });
       }
       if (file.isVideo) {
         return this.dialog.open(file.name,
@@ -118,6 +117,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
         return this.dialog.open(file.name,
           `<audio src="${file.url}" preload="auto" autoplay controls></audio>`);
       }
+      this.ngfm.download(item as NgfmFile);
     }
   }
   navigate(folder: NgfmFolder) {
