@@ -79,7 +79,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
     );
   }
   ls(folder: NgfmFolder, filters: any = {}): NgfmProgress {
-    const progress = timer(0, 25)
+    const progress = timer(0, 20)
       .pipe(
         map(val => Math.min(1, val / 30)),
         takeWhile(val => val < 1)
@@ -95,6 +95,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
     return new NgfmProgress(success, progress);
   }
   mkDir(folder: NgfmFolder): NgfmProgress {
+    this.getNode(folder);
     return new NgfmProgress(timer(100).pipe(map(() => true)));
   }
   rmDir(folder: NgfmFolder): NgfmProgress {

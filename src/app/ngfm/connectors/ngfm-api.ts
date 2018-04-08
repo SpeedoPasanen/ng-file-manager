@@ -119,8 +119,6 @@ export class NgfmApi {
                     }),
                     takeUntil(progressObj.success)
                 ).subscribe(() => { }, (err) => {
-                    this.busy$.next(false);
-                    snack ? snack.dismiss() : null;
                     return this.handleError(err);
                 });
                 return snack;
