@@ -106,11 +106,11 @@ export class NgfmApi {
     }
 
     showProgress(progressObj: NgfmProgress, message = ''): Observable<any> {
+        let snack: MatSnackBarRef<NgfmProgressSnackComponent>;
         this.busy$.next(true);
         return timer(1).pipe(
             // For some weird reason, you'd get changeDetector errors from MatSnackbar without the timeout
             map(() => {
-                let snack: MatSnackBarRef<NgfmProgressSnackComponent>;
                 progressObj.progress.pipe(
                     tap((value) => {
                         snack = snack || this.snackBar.openFromComponent(NgfmProgressSnackComponent);
@@ -125,7 +125,7 @@ export class NgfmApi {
                 });
                 return snack;
             }),
-            switchMap(snack =>
+            switchMap(() =>
                 progressObj.success.pipe(
                     catchError(err => {
                         // this.busy$.next(false);

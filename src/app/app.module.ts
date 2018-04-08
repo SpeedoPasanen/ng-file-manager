@@ -25,13 +25,13 @@ import { MatButtonModule } from '@angular/material';
   ],
   providers: [
     PrivateRouteService,
-    ConfigResolverService,
+    ConfigResolverService,/*
     {
       provide: NGFM_REST_CONFIG, useValue: new NgfmRestConfig({
         baseUrl: 'http://localhost:3000/files'
       })
     },
-    { provide: NGFM_CONNECTOR, useClass: NgfmRestConnector },
+    { provide: NGFM_CONNECTOR, useClass: NgfmRestConnector },*/
   ],
   bootstrap: [AppComponent]
 })

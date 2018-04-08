@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { timer } from 'rxjs/observable/timer';
 import { of } from 'rxjs/observable/of';
-import { map, switchMap, takeWhile, tap, last } from 'rxjs/operators';
+import { map, switchMap, takeWhile, tap, last, share } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { NgfmConnector } from '../ngfm-connector';
 import { NgfmFile } from '../../models/ngfm-file';
@@ -86,6 +86,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
       )
     const success = progress.pipe(
       last(),
+      share(),
       map(foo => [
         ...(filters.itemType === 'file' ? [] : this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName]))),
         ...(filters.itemType === 'folder' ? [] : this.getNode(folder).files.map(item => Object.assign(new NgfmFile(folder, item), item)))
