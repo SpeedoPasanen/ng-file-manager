@@ -36,19 +36,19 @@ export class NgfmMemoryConnector implements NgfmConnector {
     }
     return files;
   }
-  moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): Observable<{ files: NgfmFile[], from: NgfmFolder, to: NgfmFolder }> {
+  moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): NgfmProgress {
     const fromNode = this.getNode(from);
     const toNode = this.getNode(to);
     fromNode.files = fromNode.files.filter(nodeFile => !files.find(file => nodeFile.hash === file.hash));
     toNode.files = [...toNode.files, ...files];
-    return timer(700).pipe(map(() => { return { files, from, to }; }));
+    return new NgfmProgress(timer(700).pipe(map(() => { return true; })));
   }
-  rename(item: NgfmItem, newName: string): Observable<void> {
+  rename(item: NgfmItem, newName: string): NgfmProgress {
     if (item.isFile) {
       const file = item as NgfmFile;
       const node = this.getNode(file.folder);
       (node.files.find(f => f.hash === file.hash) || {}).name = file.name = newName;
-      return timer(800).pipe(map(() => null));
+      return new NgfmProgress(timer(800).pipe(map(() => null)));
     }
     const folder = item as NgfmFolder;
     const newFolder = new NgfmFolder(folder.root, [...folder.parent.path, newName]);
@@ -56,7 +56,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
     const newNode = this.getNode(newFolder);
     newNode.files = node.files;
     delete this.tree[folder.toString()];
-    return timer(800).pipe(map(() => null));
+    return new NgfmProgress(timer(800).pipe(map(() => null)));
   }
   private getNode(folder) {
     return this.tree[folder.toString()] = this.tree[folder.toString()] || { files: [] };
@@ -78,33 +78,39 @@ export class NgfmMemoryConnector implements NgfmConnector {
       map(folderExists => folderExists && (!!this.tree[file.folder.toString()].files.find(f => f.name === file.name)))
     );
   }
-  ls(folder: NgfmFolder, filter: any = {}): Observable<NgfmItem[]> {
-    return timer(400)
+  ls(folder: NgfmFolder, filters: any = {}): NgfmProgress {
+    const progress = timer(0, 25)
       .pipe(
-        map(foo => [
-          ...(filter.itemType === 'file' ? [] : this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName]))),
-          ...(filter.itemType === 'folder' ? [] : this.getNode(folder).files.map(item => Object.assign(new NgfmFile(folder, item), item)))
-        ])
-      );
+        map(val => Math.min(1, val / 30)),
+        takeWhile(val => val < 1)
+      )
+    const success = progress.pipe(
+      last(),
+      map(foo => [
+        ...(filters.itemType === 'file' ? [] : this.getChildren(folder.toString()).map(childName => new NgfmFolder(folder.root, [...folder.path, childName]))),
+        ...(filters.itemType === 'folder' ? [] : this.getNode(folder).files.map(item => Object.assign(new NgfmFile(folder, item), item)))
+      ])
+    );
+    return new NgfmProgress(success, progress);
   }
-  mkDir(folder: NgfmFolder): Observable<NgfmFolder> {
-    return timer(100).pipe(map(foo => this.getNode(folder)));
+  mkDir(folder: NgfmFolder): NgfmProgress {
+    return new NgfmProgress(timer(100).pipe(map(() => true)));
   }
-  rmDir(folder: NgfmFolder): Observable<NgfmFolder> {
+  rmDir(folder: NgfmFolder): NgfmProgress {
     delete this.tree[folder.toString()];
-    return timer(100).pipe(map(foo => folder));
+    return new NgfmProgress(timer(100).pipe(map(() => true)));
   }
-  rm(file: NgfmFile): Observable<NgfmFile> {
+  rm(file: NgfmFile): NgfmProgress {
     if (!this.tree[file.folder.toString()]) {
-      return of(file);
+      return new NgfmProgress(of(true));
     }
     const files = this.tree[file.folder.toString()].files;
     const treeFile = files.find(f => f.hash === file.hash);
     files.splice(files.indexOf(treeFile), 1);
-    return timer(100).pipe(map(foo => treeFile));
+    return new NgfmProgress(timer(100).pipe(map(() => true)));
   }
   uploadFile(file: NgfmFile): NgfmProgress {
-    const progress = this.mkDir(file.folder).pipe(
+    const progress = this.mkDir(file.folder).success.pipe(
       switchMap(() => {
         this.getNode(file.folder).files = _.uniqBy([...this.getNode(file.folder).files, file], f => f.name)
         return file.readDataURL().pipe(map((dataUrl) => {
@@ -116,13 +122,13 @@ export class NgfmMemoryConnector implements NgfmConnector {
       map(val => Math.min(1, val / 30)),
       takeWhile(val => val < 1)
     );
-    return {
-      progress,
-      success: progress.pipe(
+    return new NgfmProgress(
+      progress.pipe(
         last(),
         map(() => true)
-      )
-    };
+      ),
+      progress
+    );
   }
 
 }

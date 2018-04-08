@@ -4,22 +4,25 @@ import { Observable } from 'rxjs/Observable';
 import { NgfmItem } from '../models/ngfm-item';
 import { NgfmFile } from '../models/ngfm-file';
 import { NGFM_CONNECTOR } from './constants';
-import { MatDialog, MatSnackBarConfig, MatSnackBar } from '@angular/material';
+import { MatDialog, MatSnackBarConfig, MatSnackBar, MatSnackBarRef } from '@angular/material';
 import { NgfmUploadDialogComponent } from '../upload-dialog/ngfm-upload-dialog.component';
 import { NgfmBrowserDialogComponent } from '../browser-dialog/ngfm-browser-dialog.component';
 import { NgfmConnector } from './ngfm-connector';
 import { Subscriber } from 'rxjs/Subscriber';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import { take, tap, last, catchError } from 'rxjs/operators';
+import { take, tap, last, catchError, takeUntil, switchMap, map } from 'rxjs/operators';
 import { of } from 'rxjs/observable/of';
 import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
 import { HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { NgfmDownloadComponent } from '../download/ngfm-download.component';
 import { NgfmProgress } from './ngfm-progress';
+import { NgfmProgressSnackComponent } from '../progress-snack/ngfm-progress-snack.component';
+import { timer } from 'rxjs/observable/timer';
 @Injectable()
 export class NgfmApi {
+    busy$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     config: NgfmConfig;
     navigate: EventEmitter<NgfmFolder> = new EventEmitter();
     constructor(
@@ -33,58 +36,56 @@ export class NgfmApi {
         if (!this.lsSubjectMap.has(folder.hash)) {
             this.lsSubjectMap.set(folder.hash, new BehaviorSubject([]));
         }
-        this.pipeOverlay(this.connector.ls(folder, filter).pipe(take(1)))
+        this.showProgress(this.connector.ls(folder, filter))
             .subscribe(items => this.lsSubjectMap.get(folder.hash).next(items));
         return this.lsSubjectMap.get(folder.hash);
     }
-    mkDir(folder: NgfmFolder): Observable<NgfmFolder> {
-        this.showOverlay(true);
-        return this.pipeOverlay(this.connector.mkDir(folder))
-            .pipe(tap(() => this.ls(folder.parent)));
+    mkDir(folder: NgfmFolder): NgfmProgress {
+        return {
+            success: this.showProgress(this.connector.mkDir(folder))
+                .pipe(
+                    tap(() => this.ls(folder.parent))
+                )
+        };
     }
-    rmDir(folder: NgfmFolder, refreshWhenDone = true): Observable<NgfmFolder> {
-        return this.pipeOverlay(
-            this.connector.rmDir(folder).pipe(tap(() => refreshWhenDone && folder.parent ? this.ls(folder.parent) : null))
-        );
+    rmDir(folder: NgfmFolder, refreshWhenDone = true): Observable<any> {
+        return this.showProgress(
+            this.connector.rmDir(folder)
+        ).pipe(tap(() => refreshWhenDone && folder.parent ? this.ls(folder.parent) : null));
     }
     rmDirs(folders: NgfmFolder[]): Observable<NgfmFolder[]> {
-        return this.pipeOverlay(
-            combineLatest(folders.map(folder => this.rmDir(folder, false)))
-                .pipe(tap(() => this.ls(folders[0].parent)))
-        );
+        return combineLatest(
+            folders.map(folder => this.rmDir(folder, false))
+        ).pipe(tap(() => this.ls(folders[0].parent)));
     }
     rm(file: NgfmFile, refreshWhenDone = true): Observable<NgfmFile> {
-        return this.pipeOverlay(
+        return this.showProgress(
             this.connector.rm(file)
-                .pipe(tap(file => refreshWhenDone && this.ls(file.folder)))
-        );
+        ).pipe(tap(file => refreshWhenDone && this.ls(file.folder)));
     }
     rmFiles(files: NgfmFile[]): Observable<NgfmFile[]> {
         const folder = files[0].folder;
-        return this.pipeOverlay(
-            combineLatest(files.map(file => this.rm(file, false)))
-                .pipe(tap(() => this.ls(folder)))
-        );
+        return combineLatest(files.map(file => this.rm(file, false)))
+            .pipe(tap(() => this.ls(folder)));
     }
     moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): Observable<{ files: NgfmFile[]; from: NgfmFolder; to: NgfmFolder; }> {
-        return this.pipeOverlay(
+        return this.showProgress(
             this.connector.moveFiles(files, from, to)
-                .pipe(
-                    tap(() => {
-                        this.ls(from);
-                        const sbConfig: MatSnackBarConfig = new MatSnackBarConfig();
-                        sbConfig.duration = 5000;
-                        this.snackBar.open(`${this.config.messages.DONE}`, `${this.config.messages.GO_TO} ${to.name}`, sbConfig)
-                            .onAction().subscribe(() => {
-                                this.navigate.next(to);
-                            });
-                    })
-                )
-        );
+        )
+            .pipe(
+                tap(() => {
+                    this.ls(from);
+                    const sbConfig: MatSnackBarConfig = new MatSnackBarConfig();
+                    sbConfig.duration = 5000;
+                    this.snackBar.open(`${this.config.messages.DONE}`, `${this.config.messages.GO_TO} ${to.name}`, sbConfig)
+                        .onAction().subscribe(() => {
+                            this.navigate.next(to);
+                        });
+                })
+            );
     }
     private handleError(err: HttpErrorResponse | any) {
         console.log(err);
-        this.showOverlay(false);
         this.snackBar.open(`${err.message || 'Unknown error'}`, this.config.messages.CLOSE);
         return of(null);
     }
@@ -92,53 +93,42 @@ export class NgfmApi {
         return this.connector.uploadFile(file);
     }
     rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
-        return this.pipeOverlay(
-            this.connector.rename(item, newName).pipe(tap(() => this.ls(item.isFolder ? (item as NgfmFolder).parent : (item as NgfmFile).folder)))
-        );
+        return this.showProgress(
+            this.connector.rename(item, newName)
+        ).pipe(tap(() => this.ls(item.isFolder ? (item as NgfmFolder).parent : (item as NgfmFile).folder)));
     }
     mkSubDir(folder: NgfmFolder, dirName: string): Observable<NgfmFolder> {
-        return this.pipeOverlay(
+        return this.showProgress(
             this.mkDir(new NgfmFolder(folder.root, [...folder.path, dirName]))
         );
     }
 
-    pipeOverlay(observable: Observable<any>): Observable<any> {
-        this.showOverlay(true);
-        return observable.pipe(
-            tap(() => this.showOverlay(false)),
-            catchError(this.handleError.bind(this))
+    showProgress(progressObj: NgfmProgress, message = ''): Observable<any> {
+        this.busy$.next(true);
+        return timer(1).pipe(
+            // For some weird reason, you'd get changeDetector errors from MatSnackbar without the timeout
+            map(() => {
+                const snack: MatSnackBarRef<NgfmProgressSnackComponent> = this.snackBar.openFromComponent(NgfmProgressSnackComponent);
+                snack.instance.message = message;
+                progressObj.progress.pipe(
+                    tap((value) => snack.instance.value = value * 100),
+                    takeUntil(progressObj.success)
+                ).subscribe();
+                return snack;
+            }),
+            switchMap(snack =>
+                progressObj.success.pipe(
+                    catchError(err => {
+                        this.busy$.next(false);
+                        snack.dismiss();
+                        return this.handleError(err);
+                    }),
+                    tap(() => { this.busy$.next(false); snack.dismiss(); })
+                )
+            )
         );
     }
-    protected overlay = null;
-    protected showOverlay(b = true) {
-        if (b && (!this.overlay)) {
-            this.overlay = this.createOverlay();
-        }
-        if (!b && (this.overlay)) {
-            this.removeOverlay();
-        }
-    }
-    protected createOverlay() {
-        const ovl = document.createElement('div');
-        ovl.className = 'ngfm-overlay';
-        setTimeout(() => {
-            ovl.className = 'ngfm-overlay visible';
-        }, 5);
-        const ovlIcon = document.createElement('i');
-        ovlIcon.className = 'fa fa-spin fa-spinner';
-        ovlIcon.style.color = '#eee';
-        ovl.appendChild(ovlIcon);
-        document.body.appendChild(ovl);
-        return ovl;
-    }
-    protected removeOverlay() {
-        this.overlay.className = 'ngfm-overlay';
-        const ovl = this.overlay;
-        setTimeout(() => {
-            document.body.removeChild(ovl);
-        }, 300);
-        this.overlay = null;
-    }
+
     openDialog(root: string[], path: string[], dialogData: any = {}) {
         const dlg = this.dialog.open(NgfmBrowserDialogComponent, {
             width: '95vw',

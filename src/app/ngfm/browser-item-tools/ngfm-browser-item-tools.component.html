@@ -4,7 +4,7 @@
   <span class="ngfm-browser-item-tools-text" *ngIf="text">{{text}}</span>
 </button>
 <mat-menu #menu="matMenu" xPosition="after">
-  <button mat-menu-item *ngFor="let menuItem of menuItems" (click)="menuItem.action()">
+  <button mat-menu-item *ngFor="let menuItem of menuItems" (click)="menuItem.action()" [disabled]="ngfm.busy$|async">
     <span class="fa fa-{{menuItem.icon}} ngfm-menuitem-icon"></span>
     {{menuItem.text}}
   </button>

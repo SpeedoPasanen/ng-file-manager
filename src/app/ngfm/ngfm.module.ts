@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { NgfmRouteComponent } from './route/ngfm-route.component';
 import { NgfmBrowserComponent } from './browser/ngfm-browser.component';
-import { MatDialogModule, MatButtonModule, MatListModule, MatProgressBarModule, MatGridListModule, MatMenuModule, MatCheckboxModule, MatInputModule, MatSnackBarModule, MatSlideToggleModule } from '@angular/material';
+import { MatDialogModule, MatButtonModule, MatListModule, MatProgressBarModule, MatGridListModule, MatMenuModule, MatCheckboxModule, MatInputModule, MatSnackBarModule, MatSlideToggleModule, MatProgressBar } from '@angular/material';
 
 import { NgfmUploadDialogComponent } from './upload-dialog/ngfm-upload-dialog.component';
 import { NgfmDialogHeaderComponent } from './dialog-header/ngfm-dialog-header.component';
@@ -18,6 +18,7 @@ import { NgfmMemoryConnector } from './connectors/memory/ngfm-memory.connector';
 import { HttpClientModule } from '@angular/common/http';
 import { NgfmBreadcrumbsComponent } from './breadcrumbs/ngfm-breadcrumbs.component';
 import { NgfmDownloadComponent } from './download/ngfm-download.component';
+import { NgfmProgressSnackComponent } from './progress-snack/ngfm-progress-snack.component';
 
 @NgModule({
   imports: [
@@ -46,8 +47,12 @@ import { NgfmDownloadComponent } from './download/ngfm-download.component';
     NgfmBrowserItemToolsComponent,
     NgfmBreadcrumbsComponent,
     NgfmDownloadComponent,
+    NgfmProgressSnackComponent,
   ],
-  entryComponents: [NgfmBrowserDialogComponent, NgfmUploadDialogComponent, NgfmDialogComponent, NgfmDownloadComponent],
+  entryComponents: [NgfmBrowserDialogComponent,
+    NgfmUploadDialogComponent, NgfmDialogComponent, NgfmDownloadComponent,
+    NgfmProgressSnackComponent
+  ],
   providers: [
     { provide: NGFM_CONNECTOR, useClass: NgfmMemoryConnector }
   ]

@@ -29,7 +29,7 @@ export class NgfmBrowserItemToolsComponent implements OnInit, OnChanges {
     ev.stopImmediatePropagation();
   }
   constructor(
-    private ngfm: NgfmApi,
+    public ngfm: NgfmApi,
     private dialog: NgfmDialogService
   ) { }
   ngOnInit() {
