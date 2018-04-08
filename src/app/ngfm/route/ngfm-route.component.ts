@@ -39,8 +39,7 @@ export class NgfmRouteComponent implements OnInit {
       ),
     ).pipe(
       map(([root, path]) => new NgfmFolder(root, path)),
-      distinctUntilChanged((a, b) => a.hash === b.hash),
-      tap(console.log)
+      distinctUntilChanged((a, b) => a.hash === b.hash)
     );
     this.config$ = this.route.data.pipe(
       map(data => new NgfmConfig(data.config || {}))
