@@ -82,6 +82,7 @@ export class NgfmUploadDialogComponent implements OnInit {
         tap(progress => {
           this.status.currentProgress$.next(progress);
         }, (err) => {
+          this.status.fileDone(file);
         }, () => {
           this.status.fileDone(file);
         })
