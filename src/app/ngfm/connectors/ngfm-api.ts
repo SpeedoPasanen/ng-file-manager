@@ -41,12 +41,15 @@ export class NgfmApi {
         return this.lsSubjectMap.get(folder.hash);
     }
     mkDir(folder: NgfmFolder): NgfmProgress {
-        return {
-            success: this.showProgress(this.connector.mkDir(folder))
+        return new NgfmProgress(
+            this.showProgress(this.connector.mkDir(folder))
                 .pipe(
                     tap(() => this.ls(folder.parent))
                 )
-        };
+        );
+    }
+    mkSubDir(folder: NgfmFolder, dirName: string): Observable<boolean | NgfmFile[]> {
+        return this.mkDir(new NgfmFolder(folder.root, [...folder.path, dirName])).success;
     }
     rmDir(folder: NgfmFolder, refreshWhenDone = true): Observable<any> {
         return this.showProgress(
@@ -90,17 +93,16 @@ export class NgfmApi {
         return of(null);
     }
     uploadFile(file: NgfmFile): NgfmProgress {
-        return this.connector.uploadFile(file);
+        const operation = this.connector.uploadFile(file)
+        operation.success.pipe(
+            catchError(this.handleError.bind(this))
+        );
+        return operation;
     }
     rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
         return this.showProgress(
             this.connector.rename(item, newName)
         ).pipe(tap(() => this.ls(item.isFolder ? (item as NgfmFolder).parent : (item as NgfmFile).folder)));
-    }
-    mkSubDir(folder: NgfmFolder, dirName: string): Observable<NgfmFolder> {
-        return this.showProgress(
-            this.mkDir(new NgfmFolder(folder.root, [...folder.path, dirName]))
-        );
     }
 
     showProgress(progressObj: NgfmProgress, message = ''): Observable<any> {
@@ -116,15 +118,20 @@ export class NgfmApi {
                         snack.instance.value = value * 100;
                     }),
                     takeUntil(progressObj.success)
-                ).subscribe();
+                ).subscribe(() => { }, (err) => {
+                    this.busy$.next(false);
+                    snack ? snack.dismiss() : null;
+                    return this.handleError(err);
+                });
                 return snack;
             }),
             switchMap(snack =>
                 progressObj.success.pipe(
                     catchError(err => {
-                        this.busy$.next(false);
-                        snack ? snack.dismiss() : null;
-                        return this.handleError(err);
+                        // this.busy$.next(false);
+                        // snack ? snack.dismiss() : null;
+                        // return this.handleError(err);
+                        return err;
                     }),
                     tap(() => {
                         this.busy$.next(false);

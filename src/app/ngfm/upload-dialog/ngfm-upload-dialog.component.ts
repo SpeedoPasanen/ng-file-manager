@@ -1,9 +1,9 @@
 import { Component, OnInit, Inject, ChangeDetectionStrategy, HostBinding } from '@angular/core';
 import { NgfmFolder } from '../models/ngfm-folder';
 import { NgfmFile } from '../models/ngfm-file';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import * as _ from 'lodash';
-import { take, tap } from 'rxjs/operators';
+import { take, tap, catchError } from 'rxjs/operators';
 import { concat } from 'rxjs/observable/concat';
 import { NgfmConnector } from '../connectors/ngfm-connector';
 import { NgfmUploadStatus } from '../connectors/ngfm-upload-status';
@@ -24,7 +24,8 @@ export class NgfmUploadDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) private dialogData: any,
     private ngfm: NgfmApi,
-    private dialogRef: MatDialogRef<NgfmUploadDialogComponent>
+    private dialogRef: MatDialogRef<NgfmUploadDialogComponent>,
+    private snackbar: MatSnackBar
   ) { }
 
   ngOnInit() {
@@ -82,13 +83,14 @@ export class NgfmUploadDialogComponent implements OnInit {
         tap(progress => {
           this.status.currentProgress$.next(progress);
         }, (err) => {
+          this.dialogRef.close(this.files);
           this.status.fileDone(file);
         }, () => {
           this.status.fileDone(file);
         })
       )
     )).subscribe(() => { }, err => {
-
+      this.snackbar.open(err.message, this.ngfm.config.messages.CLOSE);
     }, () => {
       this.ngfm.ls(this.folder);
       this.dialogRef.close(this.files);
