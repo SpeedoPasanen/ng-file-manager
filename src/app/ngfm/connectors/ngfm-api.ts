@@ -17,6 +17,7 @@ import { NgfmConfig } from '../models/ngfm-config';
 import { NgfmDialogService } from '../dialog/ngfm-dialog.service';
 import { HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { NgfmDownloadComponent } from '../download/ngfm-download.component';
+import { NgfmProgress } from './ngfm-progress';
 @Injectable()
 export class NgfmApi {
     config: NgfmConfig;
@@ -39,11 +40,11 @@ export class NgfmApi {
     mkDir(folder: NgfmFolder): Observable<NgfmFolder> {
         this.showOverlay(true);
         return this.pipeOverlay(this.connector.mkDir(folder))
-            .pipe(tap((f: NgfmFolder) => this.ls(folder.parent)));
+            .pipe(tap(() => this.ls(folder.parent)));
     }
     rmDir(folder: NgfmFolder, refreshWhenDone = true): Observable<NgfmFolder> {
         return this.pipeOverlay(
-            this.connector.rmDir(folder).pipe(tap(folder => refreshWhenDone && folder.parent ? this.ls(folder.parent) : null))
+            this.connector.rmDir(folder).pipe(tap(() => refreshWhenDone && folder.parent ? this.ls(folder.parent) : null))
         );
     }
     rmDirs(folders: NgfmFolder[]): Observable<NgfmFolder[]> {
@@ -84,12 +85,11 @@ export class NgfmApi {
     private handleError(err: HttpErrorResponse | any) {
         console.log(err);
         this.showOverlay(false);
-        const msg = err.status && err.statusText ? `${err.status} ${err.statusText}` : err.message || 'Unknown error';
-        this.snackBar.open(`Error: ${msg} ${err.error || ''}`, this.config.messages.CLOSE);
+        this.snackBar.open(`${err.message || 'Unknown error'}`, this.config.messages.CLOSE);
         return of(null);
     }
-    uploadFile(file: NgfmFile): Observable<number> {
-        return this.pipeOverlay(this.connector.uploadFile(file));
+    uploadFile(file: NgfmFile): NgfmProgress {
+        return this.connector.uploadFile(file);
     }
     rename(item: NgfmItem, newName: string): Observable<NgfmItem> {
         return this.pipeOverlay(

@@ -8,6 +8,7 @@ import { NgfmConnector } from '../ngfm-connector';
 import { NgfmFile } from '../../models/ngfm-file';
 import { NgfmFolder } from '../../models/ngfm-folder';
 import { NgfmItem } from '../../models/ngfm-item';
+import { NgfmProgress } from '../ngfm-progress';
 
 @Injectable()
 export class NgfmMemoryConnector implements NgfmConnector {
@@ -102,8 +103,8 @@ export class NgfmMemoryConnector implements NgfmConnector {
     files.splice(files.indexOf(treeFile), 1);
     return timer(100).pipe(map(foo => treeFile));
   }
-  uploadFile(file: NgfmFile): Observable<number> {
-    const observable = this.mkDir(file.folder).pipe(
+  uploadFile(file: NgfmFile): NgfmProgress {
+    const progress = this.mkDir(file.folder).pipe(
       switchMap(() => {
         this.getNode(file.folder).files = _.uniqBy([...this.getNode(file.folder).files, file], f => f.name)
         return file.readDataURL().pipe(map((dataUrl) => {
@@ -115,7 +116,13 @@ export class NgfmMemoryConnector implements NgfmConnector {
       map(val => Math.min(1, val / 30)),
       takeWhile(val => val < 1)
     );
-    return observable;
+    return {
+      progress,
+      success: progress.pipe(
+        last(),
+        map(() => true)
+      )
+    };
   }
 
 }

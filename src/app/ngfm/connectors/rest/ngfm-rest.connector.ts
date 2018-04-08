@@ -6,10 +6,11 @@ import { NgfmItem } from '../../models/ngfm-item';
 import { NgfmFile } from '../../models/ngfm-file';
 import { HttpClient, HttpResponse, HttpParams, HttpHeaders, HttpRequest, HttpEventType } from '@angular/common/http';
 import { NgfmRestConfig } from './ngfm-rest.config';
-import { map, tap, switchMap, filter } from 'rxjs/operators';
+import { map, tap, switchMap, filter, last } from 'rxjs/operators';
 import { NGFM_REST_CONFIG } from '../constants';
 import { zip } from 'rxjs/observable/zip';
 import { HttpUploadProgressEvent } from '@angular/common/http/src/response';
+import { NgfmProgress } from '../ngfm-progress';
 @Injectable()
 export class NgfmRestConnector implements NgfmConnector {
     private base: string[];
@@ -65,17 +66,24 @@ export class NgfmRestConnector implements NgfmConnector {
             map(() => { return { file, from, to }; })
         );
     }
-    uploadFile(file: NgfmFile): Observable<number> {
+    uploadFile(file: NgfmFile): NgfmProgress {
         const data: FormData = new FormData();
         data.append('file', file.nativeFile);
         const headers = new HttpHeaders();
         headers.set('Content-Length', String(file.nativeFile.size));
         const req = new HttpRequest('POST', [...this.base, ...file.fullPath].join('/'), data, { responseType: 'json', reportProgress: true });
-        return this.http.request(req).pipe(
+        const progress = this.http.request(req).pipe(
             filter(evt => evt.type === HttpEventType.UploadProgress),
             map((evt: HttpUploadProgressEvent) =>
                 evt.loaded / evt.total
             ));
+        return {
+            progress,
+            success: progress.pipe(
+                last(),
+                map(() => true)
+            )
+        };
     }
 
     rename(item: NgfmItem, newName: string): Observable<void> {

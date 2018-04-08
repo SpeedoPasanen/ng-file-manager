@@ -3,6 +3,7 @@ import { NgfmFile } from '../models/ngfm-file';
 import { Observable } from 'rxjs/Observable';
 import { NgfmItem } from '../models/ngfm-item';
 import { Subject } from 'rxjs/Subject';
+import { NgfmProgress } from './ngfm-progress';
 export abstract class NgfmConnector {
   // TODO: add a type 'NgfmFilter' or sumthin
   abstract ls(folder: NgfmFolder, filter?: any): Observable<NgfmItem[]>
@@ -15,6 +16,6 @@ export abstract class NgfmConnector {
    * @param file The NgfmFile to upload
    * @Returns Observable of progress between 0-1. Completes when done.
    */
-  abstract uploadFile(file: NgfmFile): Observable<number>
+  abstract uploadFile(file: NgfmFile): NgfmProgress
   abstract rename(item: NgfmItem, newName: string): Observable<void>
 }

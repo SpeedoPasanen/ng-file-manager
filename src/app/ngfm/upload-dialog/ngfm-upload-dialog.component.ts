@@ -78,7 +78,7 @@ export class NgfmUploadDialogComponent implements OnInit {
     this.dialogRef.disableClose = true;
     this.status = new NgfmUploadStatus(this.files);
     concat(...this.files.map(
-      file => this.ngfm.uploadFile(file).pipe(
+      file => this.ngfm.uploadFile(file).progress.pipe(
         tap(progress => {
           this.status.currentProgress$.next(progress);
         }, (err) => {
