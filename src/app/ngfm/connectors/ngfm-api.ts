@@ -33,12 +33,12 @@ export class NgfmApi {
     }
     lsSubjectMap: Map<string, BehaviorSubject<NgfmItem[]>> = new Map();
     ls(folder: NgfmFolder, filter: any = {}): BehaviorSubject<NgfmItem[]> {
-        if (!this.lsSubjectMap.has(folder.hash)) {
-            this.lsSubjectMap.set(folder.hash, new BehaviorSubject([]));
+        if (!this.lsSubjectMap.has(folder.id)) {
+            this.lsSubjectMap.set(folder.id, new BehaviorSubject([]));
         }
         this.showProgress(this.connector.ls(folder, filter))
-            .subscribe(items => this.lsSubjectMap.get(folder.hash).next(items));
-        return this.lsSubjectMap.get(folder.hash);
+            .subscribe(items => this.lsSubjectMap.get(folder.id).next(items));
+        return this.lsSubjectMap.get(folder.id);
     }
     mkDir(folder: NgfmFolder): NgfmProgress {
         return new NgfmProgress(

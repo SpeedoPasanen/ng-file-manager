@@ -13,12 +13,12 @@ export class NgfmItem {
     fullPath: string[];
 
     selected = false;
-    hash: string; // Unique identifier made from all properties
+    id: string; // Unique identifier made from all properties
     readonly itemType: string;
     get isFile() { return this.itemType === 'file'; }
     get isFolder() { return this.itemType === 'folder'; }
     constructor(init: any) {
-        this.hash = (<any>Object).entries(init).reduce((acc, cur) => `${acc}#${cur.join('|')}`, '');
+        this.id = (<any>Object).entries(init).reduce((acc, cur) => `${acc}#${cur.join('|')}`, '');
         this.lastModifiedDate = init.lastModifiedDate ? new Date(init.lastModifiedDate) : (init.lastModified ? new Date(init.lastModified) : new Date());
         this.createdDate = init.createdDate ? init.createdDate : (init.created ? new Date(init.created) : new Date());
     }

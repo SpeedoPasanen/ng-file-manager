@@ -35,7 +35,7 @@
       <mat-grid-tile-footer *ngIf="!(pick && pick === 'folder')"></mat-grid-tile-footer>
     </mat-grid-tile>
 
-    <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children$|async trackBy: trackByHash" [class.ngfm-folder-tile]="item.isFolder"
+    <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children$|async trackBy: trackByFn" [class.ngfm-folder-tile]="item.isFolder"
       [class.ngfm-file-tile]="item.isFile" [style.background-image]="item.thumbnail ? 'url(' + item.thumbnail +')' : ''">
       <mat-grid-tile-header>
         <p>{{item.name}}</p>

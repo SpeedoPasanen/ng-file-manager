@@ -39,7 +39,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
   moveFiles(files: NgfmFile[], from: NgfmFolder, to: NgfmFolder): NgfmProgress {
     const fromNode = this.getNode(from);
     const toNode = this.getNode(to);
-    fromNode.files = fromNode.files.filter(nodeFile => !files.find(file => nodeFile.hash === file.hash));
+    fromNode.files = fromNode.files.filter(nodeFile => !files.find(file => nodeFile.id === file.id));
     toNode.files = [...toNode.files, ...files];
     return new NgfmProgress(timer(700).pipe(map(() => { return true; })));
   }
@@ -47,7 +47,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
     if (item.isFile) {
       const file = item as NgfmFile;
       const node = this.getNode(file.folder);
-      (node.files.find(f => f.hash === file.hash) || {}).name = file.name = newName;
+      (node.files.find(f => f.id === file.id) || {}).name = file.name = newName;
       return new NgfmProgress(timer(800).pipe(map(() => null)));
     }
     const folder = item as NgfmFolder;
@@ -107,7 +107,7 @@ export class NgfmMemoryConnector implements NgfmConnector {
       return new NgfmProgress(of(true));
     }
     const files = this.tree[file.folder.toString()].files;
-    const treeFile = files.find(f => f.hash === file.hash);
+    const treeFile = files.find(f => f.id === file.id);
     files.splice(files.indexOf(treeFile), 1);
     return new NgfmProgress(timer(100).pipe(map(() => true)));
   }

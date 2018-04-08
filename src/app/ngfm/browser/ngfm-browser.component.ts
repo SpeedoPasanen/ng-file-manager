@@ -64,7 +64,7 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     this.children$ = this.ngfm.ls(folder).pipe(
       tap(items => {
         // this.children = items;
-        this.selectedFiles = this.selectedFiles.map(selFile => items.find(item => item.hash === selFile.hash) as NgfmFile).filter(foundFile => !!foundFile).map(selFile => { selFile.selected = true; return selFile; });
+        this.selectedFiles = this.selectedFiles.map(selFile => items.find(item => item.id === selFile.id) as NgfmFile).filter(foundFile => !!foundFile).map(selFile => { selFile.selected = true; return selFile; });
         this.cdRef.markForCheck();
       })) as BehaviorSubject<NgfmItem[]>;
   }
@@ -80,8 +80,8 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
       this.ngfm.mkSubDir(folder, folderName).subscribe();
     });
   }
-  trackByHash(idx: number, item: NgfmItem) {
-    return item.hash;
+  trackByFn(idx: number, item: NgfmItem) {
+    return item.id;
   }
   clicked(item: NgfmItem) {
     if (item.isFolder) {
