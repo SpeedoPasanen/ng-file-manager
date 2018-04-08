@@ -1,9 +1,10 @@
-import { Component, OnInit, Input, HostBinding } from '@angular/core';
+import { Component, OnInit, Input, HostBinding, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'ngfm-dialog-header',
   templateUrl: './ngfm-dialog-header.component.html',
-  styleUrls: ['./ngfm-dialog-header.component.css']
+  styleUrls: ['./ngfm-dialog-header.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgfmDialogHeaderComponent implements OnInit {
   @Input() title = '';

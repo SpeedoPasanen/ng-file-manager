@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, HostBinding } from '@angular/core';
+import { Component, OnInit, Inject, HostBinding, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -8,7 +8,8 @@ import { NgfmItem } from '../models/ngfm-item';
 @Component({
   selector: 'ngfm-browser-dialog',
   templateUrl: './ngfm-browser-dialog.component.html',
-  styleUrls: ['./ngfm-browser-dialog.component.css']
+  styleUrls: ['./ngfm-browser-dialog.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgfmBrowserDialogComponent implements OnInit {
   @HostBinding('class.ngfm-browser-dialog') private _hostClass = true;
