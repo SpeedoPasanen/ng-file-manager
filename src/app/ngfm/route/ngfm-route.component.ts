@@ -2,9 +2,10 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, distinctUntilChanged } from 'rxjs/operators';
 import { NgfmFolder } from '../models/ngfm-folder';
 import { NgfmConfig } from '../models/ngfm-config';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 
 @Component({
@@ -15,8 +16,7 @@ import { NgfmConfig } from '../models/ngfm-config';
 export class NgfmRouteComponent implements OnInit {
   @HostBinding('class.ngfm-route-component') private _hostClass = true;
 
-  root$: Observable<string[]>;
-  path$: Observable<string[]>;
+  folder$: Observable<NgfmFolder>;
   config$: Observable<NgfmConfig>;
   private angularRoot = [];
   constructor(
@@ -31,10 +31,15 @@ export class NgfmRouteComponent implements OnInit {
     this.route.data.subscribe(data => {
       this.angularRoot = data.angularRoot || [];
     });
-    this.path$ = this.route.url.pipe(
-      map((segments: UrlSegment[]) => segments.map(seg => seg.path).filter(path => !!path)),
+    this.folder$ = combineLatest(
+      this.route.url.pipe(
+        map((segments: UrlSegment[]) => segments.map(seg => seg.path).filter(path => !!path)),
+      ),
+      this.route.data.pipe(map(data => data.root || []))
+    ).pipe(
+      map(([root, path]) => new NgfmFolder(root, path)),
+      distinctUntilChanged((a, b) => a.hash === b.hash)
     );
-    this.root$ = this.route.data.pipe(map(data => data.root || []));
     this.config$ = this.route.data.pipe(
       map(data => new NgfmConfig(data.config || {}))
     );

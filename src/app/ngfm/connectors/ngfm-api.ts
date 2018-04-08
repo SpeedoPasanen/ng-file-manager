@@ -143,7 +143,6 @@ export class NgfmApi {
         const dlg = this.dialog.open(NgfmBrowserDialogComponent, {
             width: '95vw',
             maxWidth: '95vw',
-            height: '95vh',
             maxHeight: '95vh',
             data: Object.assign({ root, path }, dialogData)
         });

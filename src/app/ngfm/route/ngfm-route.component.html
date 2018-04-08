@@ -1,1 +1,1 @@
-<ngfm-browser [root$]="root$" [path$]="path$" [config$]="config$" (navigated)="navigated($event)"></ngfm-browser>
+<ngfm-browser [folder]="folder$|async" [config$]="config$" (navigated)="navigated($event)"></ngfm-browser>

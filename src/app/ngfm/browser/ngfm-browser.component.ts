@@ -23,13 +23,11 @@ import { Subscription } from 'rxjs/Subscription';
 export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
   @HostBinding('class.ngfm-browser') private _hostClass = true;
   @Input() pick: 'file' | 'folder' | null;
-  @Input() root$: Observable<string[]>;
-  @Input() path$: Observable<string[]>;
   @Input() config$: Observable<NgfmConfig>;
   @Output() navigated: EventEmitter<NgfmFolder> = new EventEmitter();
   @Output() picked: EventEmitter<NgfmItem> = new EventEmitter();
+  @Input() folder: NgfmFolder;
   gridCols$: Observable<number>;
-  folder$: Observable<NgfmFolder>;
   children$: BehaviorSubject<NgfmItem[]>;
   selectedFiles: NgfmFile[] = [];
   @ViewChild('widthSource') widthSource: ElementRef
@@ -42,7 +40,6 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     this.subscriptions = [this.ngfm.navigate.subscribe(this.navigate.bind(this))];
-    this.rebase();
     this.gridCols$ = !window ? of(8) : fromEvent(window, 'resize').pipe(
       startWith(8),
       switchMap(() => this.getColCount()),
@@ -61,20 +58,8 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
       }));
   }
 
-  rebase() {
-    this.folder$ = combineLatest(this.root$, this.path$)
-      .pipe(
-        map(([root, path]) => new NgfmFolder(root, path)),
-        distinctUntilChanged((a, b) => a.hash === b.hash),
-        tap(this.refresh.bind(this))
-      );
-  }
 
   refresh(folder: NgfmFolder = null) {
-    if (!folder) {
-      this.folder$.pipe(take(1)).subscribe(folder => this.refresh(folder));
-      return;
-    }
     // const filter = this.pick ? { itemType: this.pick } : {}; // @Meditation: I donno if this is even a good idea. Better let user see what files are in there?
     this.children$ = this.ngfm.ls(folder).pipe(
       tap(items => {
@@ -125,8 +110,8 @@ export class NgfmBrowserComponent implements OnInit, OnChanges, OnDestroy {
     this.navigated.next(folder);
   }
   ngOnChanges(changes: SimpleChanges) {
-    if ('root$' in changes || 'path$' in changes) {
-      this.rebase();
+    if ('folder' in changes) {
+      this.refresh(this.folder);
     }
   }
   selectionChange(file: NgfmFile) {

@@ -1,64 +1,62 @@
 <div #widthSource></div>
-<div *ngIf="folder$|async as folder">
-  <div class="ngfm-browser-menu" *ngIf="(config$|async) as config">
-    <button mat-button (click)="uploadDialog(folder)" *ngIf="config.perms.createFile">
-      <i class="fa fa-plus"></i>
-      <span>{{config?.messages.UPLOAD}}</span>
-    </button>
-    <button mat-button (click)="mkDir(folder)" *ngIf="config.perms.createFolder">
-      <i class="fa fa-plus"></i>
-      <span>{{config?.messages.CREATE_FOLDER}}</span>
-    </button>
-    <mat-slide-toggle [(ngModel)]="hideTools">Hide tools</mat-slide-toggle>
-    <span *ngIf="(!pick) && config.perms.hasAny">
-      <button mat-button (click)="selectAll()">
-        <i class="fa fa-check"></i> {{config.messages.SELECT_ALL}}</button>
-    </span>
-    <span *ngIf="(!pick) && config.perms.hasAny">
-      <ngfm-browser-item-tools [items]="selectedFiles" [config]="(config$|async)" [isFile]="true" [text]="selectedFiles.length + ' ' + config?.messages.SELECTED"></ngfm-browser-item-tools>
-    </span>
-  </div>
-  <ngfm-breadcrumbs [folder]="folder" (navigated)="this.navigate($event)"></ngfm-breadcrumbs>
-  <hr/>
-  <div *ngIf="gridCols$|async as gridCols" [class.hide-tools]="hideTools">
-    <mat-grid-list [cols]="gridCols" class="ngfm-grid-list">
-      <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)" class="ngfm-folder-tile">
-        <mat-grid-tile-header>
-          <p>&bull; &bull;</p>
-        </mat-grid-tile-header>
-        <div class="folder-icon">
-          <i class="fa fa-folder fa-2x"></i>
-          <i class="fa back-icon fa-caret-left"></i>
-        </div>
-        <mat-grid-tile-footer *ngIf="pick && pick === 'folder'">
-          <button mat-button (click)="choose(folder.parent, $event)">{{(config$|async)?.messages.PICK}}</button>
-        </mat-grid-tile-footer>
-        <mat-grid-tile-footer *ngIf="!(pick && pick === 'folder')"></mat-grid-tile-footer>
-      </mat-grid-tile>
+<div class="ngfm-browser-menu" *ngIf="(config$|async) as config">
+  <button mat-button (click)="uploadDialog(folder)" *ngIf="config.perms.createFile">
+    <i class="fa fa-plus"></i>
+    <span>{{config?.messages.UPLOAD}}</span>
+  </button>
+  <button mat-button (click)="mkDir(folder)" *ngIf="config.perms.createFolder">
+    <i class="fa fa-plus"></i>
+    <span>{{config?.messages.CREATE_FOLDER}}</span>
+  </button>
+  <mat-slide-toggle [(ngModel)]="hideTools">Hide tools</mat-slide-toggle>
+  <span *ngIf="(!pick) && config.perms.hasAny">
+    <button mat-button (click)="selectAll()">
+      <i class="fa fa-check"></i> {{config.messages.SELECT_ALL}}</button>
+  </span>
+  <span *ngIf="(!pick) && config.perms.hasAny">
+    <ngfm-browser-item-tools [items]="selectedFiles" [config]="(config$|async)" [isFile]="true" [text]="selectedFiles.length + ' ' + config?.messages.SELECTED"></ngfm-browser-item-tools>
+  </span>
+</div>
+<ngfm-breadcrumbs [folder]="folder" (navigated)="this.navigate($event)"></ngfm-breadcrumbs>
+<hr/>
+<div *ngIf="gridCols$|async as gridCols" [class.hide-tools]="hideTools">
+  <mat-grid-list [cols]="gridCols" class="ngfm-grid-list">
+    <mat-grid-tile *ngIf="folder.path.length" (click)="navigate(folder.parent)" class="ngfm-folder-tile">
+      <mat-grid-tile-header>
+        <p>&bull; &bull;</p>
+      </mat-grid-tile-header>
+      <div class="folder-icon">
+        <i class="fa fa-folder fa-2x"></i>
+        <i class="fa back-icon fa-caret-left"></i>
+      </div>
+      <mat-grid-tile-footer *ngIf="pick && pick === 'folder'">
+        <button mat-button (click)="choose(folder.parent, $event)">{{(config$|async)?.messages.PICK}}</button>
+      </mat-grid-tile-footer>
+      <mat-grid-tile-footer *ngIf="!(pick && pick === 'folder')"></mat-grid-tile-footer>
+    </mat-grid-tile>
 
-      <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children$|async trackBy: trackByHash" [class.ngfm-folder-tile]="item.isFolder"
-        [class.ngfm-file-tile]="item.isFile" [style.background-image]="item.thumbnail ? 'url(' + item.thumbnail +')' : ''">
-        <mat-grid-tile-header>
-          <p>{{item.name}}</p>
-        </mat-grid-tile-header>
-        <div class="folder-icon" *ngIf="item.isFolder">
-          <i class="fa fa-folder fa-2x"></i>
-        </div>
-        <i *ngIf="item.isFile && item.isAudio" class="fa fa-volume-up"></i>
-        <i *ngIf="item.isFile && item.isVideo" class="fa fa-video"></i>
-        <div class="ngfm-file-extension" *ngIf="item.isFile && !(item.isAudio||item.isVideo||item.isImage)">
-          <p>{{item.extension}}</p>
-        </div>
-        <mat-grid-tile-footer *ngIf="pick && pick === item.itemType">
-          <button mat-button (click)="choose(item, $event)">{{(config$|async)?.messages.PICK}}</button>
-        </mat-grid-tile-footer>
-        <mat-grid-tile-footer *ngIf="(!pick) && (config$|async)?.perms.hasAny">
-          <mat-checkbox *ngIf="item.isFile" [(ngModel)]="item.selected" (change)="selectionChange(item)" (click)="$event.stopPropagation()"></mat-checkbox>
-          <ngfm-browser-item-tools [items]="[item]" [config]="(config$|async)" [isFile]="item.isFile"></ngfm-browser-item-tools>
-        </mat-grid-tile-footer>
-      </mat-grid-tile>
+    <mat-grid-tile (click)="clicked(item)" *ngFor="let item of children$|async trackBy: trackByHash" [class.ngfm-folder-tile]="item.isFolder"
+      [class.ngfm-file-tile]="item.isFile" [style.background-image]="item.thumbnail ? 'url(' + item.thumbnail +')' : ''">
+      <mat-grid-tile-header>
+        <p>{{item.name}}</p>
+      </mat-grid-tile-header>
+      <div class="folder-icon" *ngIf="item.isFolder">
+        <i class="fa fa-folder fa-2x"></i>
+      </div>
+      <i *ngIf="item.isFile && item.isAudio" class="fa fa-volume-up"></i>
+      <i *ngIf="item.isFile && item.isVideo" class="fa fa-video"></i>
+      <div class="ngfm-file-extension" *ngIf="item.isFile && !(item.isAudio||item.isVideo||item.isImage)">
+        <p>{{item.extension}}</p>
+      </div>
+      <mat-grid-tile-footer *ngIf="pick && pick === item.itemType">
+        <button mat-button (click)="choose(item, $event)">{{(config$|async)?.messages.PICK}}</button>
+      </mat-grid-tile-footer>
+      <mat-grid-tile-footer *ngIf="(!pick) && (config$|async)?.perms.hasAny">
+        <mat-checkbox *ngIf="item.isFile" [(ngModel)]="item.selected" (change)="selectionChange(item)" (click)="$event.stopPropagation()"></mat-checkbox>
+        <ngfm-browser-item-tools [items]="[item]" [config]="(config$|async)" [isFile]="item.isFile"></ngfm-browser-item-tools>
+      </mat-grid-tile-footer>
+    </mat-grid-tile>
 
 
-    </mat-grid-list>
-  </div>
+  </mat-grid-list>
 </div>
