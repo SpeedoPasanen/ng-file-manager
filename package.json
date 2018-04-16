@@ -31,9 +31,6 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
-    "@ngrx/core": "^1.2.0",
-    "@ngrx/effects": "^5.2.0",
-    "@ngrx/store": "^5.2.0",
     "@types/downloadjs": "^1.4.0",
     "@types/lodash": "^4.14.106",
     "core-js": "^2.5.4",
@@ -44,11 +41,9 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/schematics": "^0.5.4",
     "@angular/cli": "^1.7.4",
     "@angular/compiler-cli": "^5.2.0",
     "@angular/language-service": "^5.2.0",
-    "@ngrx/schematics": "^5.2.0",
     "@types/jasmine": "~2.8.3",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.104",

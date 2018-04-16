@@ -34,7 +34,7 @@ import { NgfmProgressSnackComponent } from './progress-snack/ngfm-progress-snack
     MatSnackBarModule,
     FormsModule,
     MatSlideToggleModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   exports: [],
   declarations: [
